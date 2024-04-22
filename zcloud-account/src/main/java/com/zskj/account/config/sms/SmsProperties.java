@@ -1,4 +1,4 @@
-package com.zskj.account.config;
+package com.zskj.account.config.sms;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
  * </p>
  */
 
-@ConfigurationProperties(prefix = "sms")
+@ConfigurationProperties(prefix = "sms.ali-cloud")
 @Component
 @Data
 public class SmsProperties {
