@@ -1,8 +1,8 @@
-package com.zskj.util;
+package com.zskj.common.util;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
-import com.zskj.enums.BizCodeEnum;
+import com.zskj.common.enums.BizCodeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

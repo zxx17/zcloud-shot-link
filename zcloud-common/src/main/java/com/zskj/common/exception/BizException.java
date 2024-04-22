@@ -1,6 +1,6 @@
-package com.zskj.exception;
+package com.zskj.common.exception;
 
-import com.zskj.enums.BizCodeEnum;
+import com.zskj.common.enums.BizCodeEnum;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

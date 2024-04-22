@@ -1,5 +1,6 @@
 # Compiled class file
 *.class
+target/
 # Log file
 *.log
 # BlueJ files
@@ -22,3 +23,7 @@
 http://www.java.com/en/download/help/error_hotspot.x
 ml
 hs_err_pid*
+
+# temp
+*.yaml
+test/

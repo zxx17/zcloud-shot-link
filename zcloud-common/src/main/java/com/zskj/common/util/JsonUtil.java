@@ -1,4 +1,4 @@
-package com.zskj.util;
+package com.zskj.common.util;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonParser;

@@ -1,6 +1,6 @@
-package com.zskj.exception;
+package com.zskj.common.exception;
 
-import com.zskj.util.JsonData;
+import com.zskj.common.util.JsonData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;

@@ -1,4 +1,4 @@
-package com.zskj.enums;
+package com.zskj.common.enums;
 
 import lombok.Getter;
 
