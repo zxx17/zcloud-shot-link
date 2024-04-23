@@ -6,20 +6,20 @@ import org.springframework.stereotype.Component;
 
 /**
  * @author Xinxuan Zhuo
- * @version 2024/4/22
+ * @version 2024/4/23
  * <p>
- * 阿里云sms服务配置参数
+ *
  * </p>
  */
-
-@ConfigurationProperties(prefix = "sms.ali-cloud")
+@ConfigurationProperties(prefix = "sms.ali-market")
 @Component
 @Data
-public class SmsProperties {
+public class SmsAliCloudMarketProperties {
 
-    private String endpoint;
+    private String url;
 
-    private String accessKey;
+    private String templateId;
 
-    private String accessSecret;
+    private String appCode;
+
 }

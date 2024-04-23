@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Xinxuan Zhuo
  * @version 2024/4/22
  * <p>
- *  阿里云sms服务配置
+ *  创建SmsClient，后续可以支持切换短信服务提供商
  * </p>
  */
 
@@ -19,11 +19,11 @@ import org.springframework.context.annotation.Configuration;
 public class SmsConfig {
 
     @Autowired
-    private SmsProperties smsProperties;
+    private SmsAliCloudProperties smsAliCloudProperties;
 
 
     /**
-     * 创建SmsClient，后续可以支持切换短信服务提供商
+     * 阿里云sms服务配置
      * @return aliClient
      * @throws Exception e
      */
@@ -31,10 +31,20 @@ public class SmsConfig {
     @Bean(name = "smsClient")
     public com.aliyun.dysmsapi20170525.Client createClient() throws Exception {
         com.aliyun.teaopenapi.models.Config config = new com.aliyun.teaopenapi.models.Config()
-                .setAccessKeyId(smsProperties.getAccessKey())
-                .setAccessKeySecret(smsProperties.getAccessSecret());
-        config.endpoint = smsProperties.getEndpoint();
+                .setAccessKeyId(smsAliCloudProperties.getAccessKey())
+                .setAccessKeySecret(smsAliCloudProperties.getAccessSecret());
+        config.endpoint = smsAliCloudProperties.getEndpoint();
         return new com.aliyun.dysmsapi20170525.Client(config);
     }
+
+    /**
+     * 阿里云市场短信服务厂商
+     */
+    @ConditionalOnProperty(prefix = "sms.ali-market", name = "enable",havingValue = "true")
+    @Bean(name = "smsClient")
+    public SmsAliCloudMarketSmsClient createClient02(){
+        return new SmsAliCloudMarketSmsClient();
+    }
+
 
 }
