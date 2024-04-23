@@ -33,21 +33,21 @@ import static com.zskj.common.constant.CommonConstant.SHOT_LINK_PROJECT_NAME;
 public class SmsComponent {
 
     /**
-     * 阿里云短信服务client
+     * 短信服务client
      */
     @Resource(name = "smsClient")
     private Object smsClient;
 
     /**
-     * 第三方短信服务配置信息
+     * 【第三方】短信服务配置信息
      */
     @Resource
     private SmsAliCloudMarketProperties smsAliCloudMarketProperties;
 
     /**
-     * 调用第三方短信服务
+     * 调用【第三方】短信服务
      */
-    @Autowired
+    @Resource
     private RestTemplate restTemplate;
 
     /**
@@ -86,7 +86,9 @@ public class SmsComponent {
                         .setTemplateParam(templateParam.toJSONString());
                 RuntimeOptions runtimeOptions = new RuntimeOptions();
                 ((Client) smsClient).sendSmsWithOptions(sendSmsRequest, runtimeOptions);
-            } else if (smsClient instanceof SmsAliCloudMarketSmsClient) {
+            }
+            // 【第三方】阿里云市场聚美智数
+            else if (smsClient instanceof SmsAliCloudMarketSmsClient) {
                 String domain = smsAliCloudMarketProperties.getUrl();
                 domain += "?mobile=%s&templateId=%s&value=%s";
                 String url = String.format(domain, to, smsAliCloudMarketProperties.getTemplateId(), value);
