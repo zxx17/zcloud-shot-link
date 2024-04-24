@@ -26,7 +26,7 @@ import java.time.format.DateTimeFormatter;
  * @since 2024-04-22
  */
 @RestController
-@RequestMapping("/api/v1/account")
+@RequestMapping("/api/account/v1")
 public class AccountController {
 
     @Autowired

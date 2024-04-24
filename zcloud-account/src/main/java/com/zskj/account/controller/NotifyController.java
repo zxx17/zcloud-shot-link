@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/account")
+@RequestMapping("/api/notify/v1")
 public class NotifyController {
 
     /**
