@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
  * @version 2024/4/22
  * <p>
  *  创建SmsClient，后续可以支持切换短信服务提供商
+ *  不能同时为true
  * </p>
  */
 
@@ -29,7 +30,7 @@ public class SmsConfig {
      */
     @ConditionalOnProperty(prefix = "sms.ali-cloud", name = "enable",havingValue = "true")
     @Bean(name = "smsClient")
-    public com.aliyun.dysmsapi20170525.Client createClient() throws Exception {
+    public com.aliyun.dysmsapi20170525.Client createClient01() throws Exception {
         com.aliyun.teaopenapi.models.Config config = new com.aliyun.teaopenapi.models.Config()
                 .setAccessKeyId(smsAliCloudProperties.getAccessKey())
                 .setAccessKeySecret(smsAliCloudProperties.getAccessSecret());

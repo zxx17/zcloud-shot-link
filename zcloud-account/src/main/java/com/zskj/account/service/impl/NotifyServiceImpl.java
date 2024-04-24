@@ -68,7 +68,7 @@ public class NotifyServiceImpl implements NotifyService {
             long ttl = Long.parseLong(cacheValue.split("_")[1]);
             long leftTime = CommonUtil.getCurrentTimestamp() - ttl;
             if (leftTime < (RESEND_LIMIT)) {
-                log.info("重复发送短信验证码，时间间隔:{}秒", leftTime);
+                log.info("重复发送短信验证码，时间间隔:{}ms", leftTime);
                 return JsonData.buildResult(BizCodeEnum.CODE_LIMITED);
             }
         }

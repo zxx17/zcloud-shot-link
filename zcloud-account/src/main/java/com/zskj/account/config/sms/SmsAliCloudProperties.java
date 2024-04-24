@@ -17,9 +17,18 @@ import org.springframework.stereotype.Component;
 @Data
 public class SmsAliCloudProperties {
 
+    /**
+     * 地域url
+     */
     private String endpoint;
 
+    /**
+     * sms-user accessKey
+     */
     private String accessKey;
 
+    /**
+     * sms-user accessSecret
+     */
     private String accessSecret;
 }

@@ -16,10 +16,19 @@ import org.springframework.stereotype.Component;
 @Data
 public class SmsAliCloudMarketProperties {
 
+    /**
+     * 第三方短信服务地址
+     */
     private String url;
 
+    /**
+     * 短信模板id
+     */
     private String templateId;
 
+    /**
+     * 第三方appCode用于鉴权
+     */
     private String appCode;
 
 }
