@@ -20,4 +20,13 @@ public interface NotifyService {
      * @return jsonData
      */
     JsonData sendCode(SendCodeEnum sendCodeEnum, String to);
+
+    /**
+     * 验证码校验
+     * @param sendCodeEnum flag
+     * @param to target
+     * @param code sms-code
+     * @return jsonData
+     */
+    boolean checkCode(SendCodeEnum sendCodeEnum, String to, String code);
 }

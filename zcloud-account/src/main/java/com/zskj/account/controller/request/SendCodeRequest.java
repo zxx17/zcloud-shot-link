@@ -18,13 +18,13 @@ public class SendCodeRequest {
     /**
      * 验证码
      */
-    @NotNull
+    @NotNull(message = "图形验证码不能为空")
     private String captcha;
 
     /**
      * 手机号或者邮箱
      */
-    @NotNull
+    @NotNull(message = "手机号或者邮箱不能为空")
     private String to;
 
 }

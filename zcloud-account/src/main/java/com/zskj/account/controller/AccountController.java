@@ -1,16 +1,17 @@
 package com.zskj.account.controller;
 
 
+import com.zskj.account.controller.request.AccountLoginRequest;
+import com.zskj.account.controller.request.AccountRegisterRequest;
+import com.zskj.account.service.AccountService;
 import com.zskj.account.storage.IFileStorage;
 import com.zskj.common.enums.BizCodeEnum;
 import com.zskj.common.util.CommonUtil;
 import com.zskj.common.util.JsonData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
@@ -31,6 +32,9 @@ public class AccountController {
 
     @Autowired
     private IFileStorage fileStorage;
+
+    @Autowired
+    private AccountService accountService;
 
 
     /**
@@ -61,7 +65,28 @@ public class AccountController {
         } catch (Exception e) {
             return JsonData.buildResult(BizCodeEnum.FILE_UPLOAD_USER_IMG_FAIL);
         }
-
     }
+
+
+    /**
+     * 用户注册
+     * @param request 注册表单
+     * @return res
+     */
+    @PostMapping("/register")
+    public JsonData register(@RequestBody @Validated AccountRegisterRequest request){
+        return accountService.register(request);
+    }
+
+    /**
+     * 用户登录
+     * @param request 登录表单数据
+     * @return res
+     */
+    @PostMapping("/login")
+    public JsonData login(@RequestBody @Validated AccountLoginRequest request){
+        return accountService.login(request);
+    }
+
 }
 

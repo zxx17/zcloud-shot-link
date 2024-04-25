@@ -1,7 +1,10 @@
 package com.zskj.account.service;
 
+import com.zskj.account.controller.request.AccountLoginRequest;
+import com.zskj.account.controller.request.AccountRegisterRequest;
 import com.zskj.account.model.AccountDO;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.zskj.common.util.JsonData;
 
 /**
  * <p>
@@ -13,4 +16,17 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface AccountService extends IService<AccountDO> {
 
+    /**
+     * 用户注册
+     * @param request 注册表单
+     * @return res
+     */
+    JsonData register(AccountRegisterRequest request);
+
+    /**
+     * 用户登录
+     * @param request 登录表单数据
+     * @return res
+     */
+    JsonData login(AccountLoginRequest request);
 }

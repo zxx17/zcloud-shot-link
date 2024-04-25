@@ -85,5 +85,28 @@ public class NotifyServiceImpl implements NotifyService {
         return JsonData.buildSuccess();
     }
 
+    /**
+     * 验证码校验
+     * @param sendCodeEnum flag
+     * @param to target
+     * @param code sms-code
+     * @return jsonData
+     * TODO 这里的校验和删除不是原子操作
+     */
+    @Override
+    public boolean checkCode(SendCodeEnum sendCodeEnum, String to, String code) {
+        String key = String.format(RedisKeyConstant.CHECK_CODE_KEY, sendCodeEnum.name(), to);
+        String cacheValue = stringRedisTemplate.opsForValue().get(key);
+        if (StringUtils.isNotBlank(cacheValue)){
+            String cacheCode = cacheValue.split("_")[0];
+            if(cacheCode.equalsIgnoreCase(code)){
+                //删除验证码
+                stringRedisTemplate.delete(key);
+                return true;
+            }
+        }
+        return false;
+    }
+
 
 }
