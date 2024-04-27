@@ -77,19 +77,25 @@ public class NotifyServiceImpl implements NotifyService {
         String value = code + "_" + CommonUtil.getCurrentTimestamp();
         stringRedisTemplate.opsForValue().set(cacheKey, value, CODE_EXPIRED, TimeUnit.MILLISECONDS);
         if (CheckUtil.isEmail(to)) {
-            //发送邮箱验证码  TODO
+            // 发送邮箱验证码 TODO
+            return JsonData.buildSuccess();
         } else if (CheckUtil.isPhone(to)) {
-            //发送手机验证码
+            // 发送手机验证码
             smsComponent.send(to, code);
+            return JsonData.buildSuccess();
+        } else {
+            return JsonData.buildError("邮箱或手机号验证错误");
         }
-        return JsonData.buildSuccess();
+
+
     }
 
     /**
      * 验证码校验
+     *
      * @param sendCodeEnum flag
-     * @param to target
-     * @param code sms-code
+     * @param to           target
+     * @param code         sms-code
      * @return jsonData
      * TODO 这里的校验和删除不是原子操作
      */
@@ -97,9 +103,9 @@ public class NotifyServiceImpl implements NotifyService {
     public boolean checkCode(SendCodeEnum sendCodeEnum, String to, String code) {
         String key = String.format(RedisKeyConstant.CHECK_CODE_KEY, sendCodeEnum.name(), to);
         String cacheValue = stringRedisTemplate.opsForValue().get(key);
-        if (StringUtils.isNotBlank(cacheValue)){
+        if (StringUtils.isNotBlank(cacheValue)) {
             String cacheCode = cacheValue.split("_")[0];
-            if(cacheCode.equalsIgnoreCase(code)){
+            if (cacheCode.equalsIgnoreCase(code)) {
                 //删除验证码
                 stringRedisTemplate.delete(key);
                 return true;

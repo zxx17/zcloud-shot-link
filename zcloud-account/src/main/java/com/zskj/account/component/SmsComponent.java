@@ -103,7 +103,7 @@ public class SmsComponent {
             }
             log.info("发送短信验证码成功");
         } catch (TeaException error) {
-            log.error("发送短信验证码失败【远程调用异常】:{}", error.getMessage());
+            log.error("发送短信验证码失败【阿里SMS远程调用异常】:{}", error.getMessage());
         } catch (Exception sError) {
             log.error("发送短信验证码失败【系统异常】:{}", sError.getMessage());
         }
