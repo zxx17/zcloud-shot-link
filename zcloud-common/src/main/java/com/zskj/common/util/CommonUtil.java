@@ -1,5 +1,6 @@
 package com.zskj.common.util;
 
+import com.google.common.hash.Hashing;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,6 +20,7 @@ import java.util.*;
  * </p>
  */
 
+@SuppressWarnings("ALL")
 @Slf4j
 public class CommonUtil {
 
@@ -189,7 +191,15 @@ public class CommonUtil {
             log.warn("响应json数据给前端异常:{}", e.getMessage());
         }
 
+    }
 
+    /**
+     * murmurHash32 算法生成
+     * @param param string
+     * @return long
+     */
+    public static long murmurHash32(String param){
+        return Hashing.murmur3_32_fixed().hashUnencodedChars(param).padToLong();
     }
 
 }

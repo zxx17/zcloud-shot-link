@@ -38,6 +38,7 @@
         <sharding-jdbc.version>4.1.1</sharding-jdbc.version>
         <junit.version>4.12</junit.version>
         <druid.version>1.1.16</druid.version>
+        <guava.version>32.1.2-jre</guava.version>
         <skipTests>true</skipTests>
         <docker.image.prefix>zcloud</docker.image.prefix>
     </properties>
@@ -151,6 +152,12 @@
                 <groupId>com.xuxueli</groupId>
                 <artifactId>xxl-job-core</artifactId>
                 <version>${xxl-job.version}</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
