@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
  * @author Xinxuan Zhuo
  * @version 2024/4/21
  * <p>
- *  异常处理器
+ * 异常处理器
  * </p>
  */
 
@@ -27,24 +27,20 @@ public class CustomExceptionHandler {
 
 
     /**
-     * 业务异常 | 系统异常 拦截
+     * 业务异常 拦截
+     *
      * @param e 异常
      */
     @ExceptionHandler
     @ResponseBody
-    public JsonData handler(Exception e){
-        if(e instanceof BizException){
-            BizException bizException = (BizException) e;
-            log.error("[业务异常]{}",e.getMessage());
-            return JsonData.buildCodeAndMsg(bizException.getCode(),bizException.getMsg());
-        }else {
-            log.error("[系统异常]{}",e.getMessage());
-            return JsonData.buildError("系统异常");
-        }
+    public JsonData handler(BizException e) {
+        log.error("[业务异常]{}", e.getMessage());
+        return JsonData.buildCodeAndMsg(e.getCode(), e.getMsg());
     }
 
     /**
      * 处理Get请求中 使用@Valid 验证路径中请求实体校验失败后抛出的异常
+     *
      * @param e 异常
      */
     @ExceptionHandler(BindException.class)
@@ -56,6 +52,7 @@ public class CustomExceptionHandler {
 
     /**
      * 处理请求参数格式错误 @RequestParam上validate失败后抛出的异常是javax.validation.ConstraintViolationException
+     *
      * @param e 异常
      */
     @ExceptionHandler(ConstraintViolationException.class)
@@ -67,6 +64,7 @@ public class CustomExceptionHandler {
 
     /**
      * 处理请求参数格式错误 @RequestBody上validate失败后抛出的异常是MethodArgumentNotValidException异常。
+     *
      * @param e 异常
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -75,7 +73,6 @@ public class CustomExceptionHandler {
         String message = e.getBindingResult().getAllErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage).collect(Collectors.joining());
         return JsonData.buildError(message);
     }
-
 
 
 }
