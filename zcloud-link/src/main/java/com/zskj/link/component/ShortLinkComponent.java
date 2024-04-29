@@ -21,7 +21,7 @@ public class ShortLinkComponent {
     private static final String CHARS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
     /**
-     * 创建短链
+     * 创建短链压缩码
      *
      * @param longLink 长链
      * @return 短链

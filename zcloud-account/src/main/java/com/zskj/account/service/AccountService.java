@@ -2,8 +2,6 @@ package com.zskj.account.service;
 
 import com.zskj.account.controller.request.AccountLoginRequest;
 import com.zskj.account.controller.request.AccountRegisterRequest;
-import com.zskj.account.model.AccountDO;
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.zskj.common.util.JsonData;
 
 /**
@@ -14,7 +12,7 @@ import com.zskj.common.util.JsonData;
  * @author Xinxuan Zhuo
  * @since 2024-04-22
  */
-public interface AccountService extends IService<AccountDO> {
+public interface AccountService {
 
     /**
      * 用户注册

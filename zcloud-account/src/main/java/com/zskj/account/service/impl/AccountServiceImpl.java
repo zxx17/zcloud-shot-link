@@ -4,8 +4,6 @@ import com.zskj.account.controller.request.AccountLoginRequest;
 import com.zskj.account.controller.request.AccountRegisterRequest;
 import com.zskj.account.manager.AccountManager;
 import com.zskj.account.model.AccountDO;
-import com.zskj.account.mapper.AccountMapper;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zskj.account.service.AccountService;
 import com.zskj.account.service.NotifyService;
 import com.zskj.common.enums.AuthTypeEnum;
@@ -34,7 +32,7 @@ import java.util.List;
  */
 @Slf4j
 @Service
-public class AccountServiceImpl extends ServiceImpl<AccountMapper, AccountDO> implements AccountService {
+public class AccountServiceImpl implements AccountService {
 
     @Autowired
     private AccountManager accountManager;
