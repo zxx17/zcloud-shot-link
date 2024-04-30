@@ -1,11 +1,9 @@
 package com.zskj.account.manager.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.zskj.account.manager.AccountManager;
 import com.zskj.account.mapper.AccountMapper;
 import com.zskj.account.model.AccountDO;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +17,6 @@ import java.util.List;
  * </p>
  */
 
-@Slf4j
 @Service
 public class AccountManagerImpl implements AccountManager {
 

@@ -73,7 +73,7 @@ public class LoginInterceptor implements HandlerInterceptor {
             return true;
         }
         log.error("异常请求: {}", "请求未携带TOKEN 或 请求路径不存在");
-        CommonUtil.sendJsonMessage(response, BizCodeEnum.ACCOUNT_UNLOGIN);
+        CommonUtil.sendJsonMessage(response, BizCodeEnum.ACCOUNT_UNLOGIN.getMessage());
         return false;
     }
 

@@ -25,5 +25,4 @@ ml
 hs_err_pid*
 
 # temp
-*.yaml
 test/

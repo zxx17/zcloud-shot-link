@@ -1,6 +1,8 @@
 package com.zskj.link.component;
 
 import com.zskj.common.util.CommonUtil;
+import com.zskj.link.strategy.shortlink.ShardingDBConfig;
+import com.zskj.link.strategy.shortlink.ShardingTableConfig;
 import org.apache.logging.log4j.util.StringBuilders;
 import org.springframework.stereotype.Component;
 
@@ -29,7 +31,9 @@ public class ShortLinkComponent {
     public String createShortLinkCode(String longLink) {
         long murmurHash32 = CommonUtil.murmurHash32(longLink);
         // 进制转换
-        return encodeToBase62(murmurHash32);
+        String code = encodeToBase62(murmurHash32);
+        // 添加库位表位后返回
+        return ShardingDBConfig.getRandomDBPrefix() + code + ShardingTableConfig.getRandomTableSuffix();
     }
 
     /**
