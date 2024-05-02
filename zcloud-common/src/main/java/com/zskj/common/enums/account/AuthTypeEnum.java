@@ -1,4 +1,4 @@
-package com.zskj.common.enums;
+package com.zskj.common.enums.account;
 
 /**
  * @author Xinxuan Zhuo

@@ -4,7 +4,7 @@ import com.zskj.account.component.SmsComponent;
 import com.zskj.account.service.NotifyService;
 import com.zskj.common.constant.RedisKeyConstant;
 import com.zskj.common.enums.BizCodeEnum;
-import com.zskj.common.enums.SendCodeEnum;
+import com.zskj.common.enums.account.SendCodeEnum;
 import com.zskj.common.util.CheckUtil;
 import com.zskj.common.util.CommonUtil;
 import com.zskj.common.util.JsonData;

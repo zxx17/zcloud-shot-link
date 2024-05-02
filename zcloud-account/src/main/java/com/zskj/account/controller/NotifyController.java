@@ -4,7 +4,7 @@ import com.google.code.kaptcha.Producer;
 import com.zskj.account.controller.request.SendCodeRequest;
 import com.zskj.account.service.NotifyService;
 import com.zskj.common.enums.BizCodeEnum;
-import com.zskj.common.enums.SendCodeEnum;
+import com.zskj.common.enums.account.SendCodeEnum;
 import com.zskj.common.util.CommonUtil;
 import com.zskj.common.util.JsonData;
 import lombok.extern.slf4j.Slf4j;

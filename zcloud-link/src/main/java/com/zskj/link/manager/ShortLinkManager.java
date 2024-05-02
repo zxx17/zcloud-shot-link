@@ -26,7 +26,7 @@ public interface ShortLinkManager {
      * @param shortLinkCode code
      * @return ShortLinkDO
      */
-    ShortLinkDO findByShortLinCode(String shortLinkCode);
+    ShortLinkDO findByShortLinkCode(String shortLinkCode);
 
 
     /**

@@ -1,6 +1,6 @@
 package com.zskj.account.service;
 
-import com.zskj.common.enums.SendCodeEnum;
+import com.zskj.common.enums.account.SendCodeEnum;
 import com.zskj.common.util.JsonData;
 
 /**
