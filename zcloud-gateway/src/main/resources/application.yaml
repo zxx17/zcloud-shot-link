@@ -1,0 +1,17 @@
+server:
+  port: 8888
+
+
+#应用名称
+spring:
+  application:
+    name: zcloud-gateway
+
+  #服务注册发现
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 8.134.147.121:8848
+        username: nacos
+        password: WcW191002
+
