@@ -1,5 +1,7 @@
 package com.zskj.link.service;
 
+import com.zskj.common.util.JsonData;
+import com.zskj.link.controller.request.ShortLinkAddRequest;
 import com.zskj.link.vo.ShortLinkVO;
 
 /**
@@ -18,4 +20,11 @@ public interface ShortLinkService {
      * @return vo
      */
     ShortLinkVO parseShortLinkCode(String shortLinkCode);
+
+    /**
+     * 新增短链
+     * @param request req
+     * @return jsonData
+     */
+    JsonData createShortLink(ShortLinkAddRequest request);
 }
