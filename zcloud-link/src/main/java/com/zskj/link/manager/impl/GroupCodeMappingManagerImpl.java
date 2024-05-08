@@ -37,7 +37,7 @@ public class GroupCodeMappingManagerImpl implements GroupCodeMappingManager {
 
         return groupCodeMappingMapper.selectOne(new QueryWrapper<GroupCodeMappingDO>()
                 .eq("id", mappingId).eq("account_no", accountNo)
-                .eq("group_id", groupId));
+                .eq("group_id", groupId).eq("del", 0));
     }
 
     @Override
@@ -60,7 +60,7 @@ public class GroupCodeMappingManagerImpl implements GroupCodeMappingManager {
         // 执行分页查询
         Page<GroupCodeMappingDO> groupCodeMappingPageResult = groupCodeMappingMapper.selectPage(pageInfo,
                 new LambdaQueryWrapper<GroupCodeMappingDO>().eq(GroupCodeMappingDO::getAccountNo, accountNo)
-                        .eq(GroupCodeMappingDO::getGroupId, groupId));
+                        .eq(GroupCodeMappingDO::getGroupId, groupId).eq(GroupCodeMappingDO::getDel, 0));
         // 构建返回的分页数据Map
         Map<String, Object> pageMap = new HashMap<>(3);
         // 添加总记录数到Map
@@ -81,6 +81,16 @@ public class GroupCodeMappingManagerImpl implements GroupCodeMappingManager {
                 .eq("group_id", groupId).set("state", shortLinkStateEnum.name()));
     }
 
+
+    @Override
+    public GroupCodeMappingDO findByCodeAndGroupId(String shortLinkCode, Long id, Long accountNo) {
+
+        return groupCodeMappingMapper.selectOne(new QueryWrapper<GroupCodeMappingDO>()
+                .eq("code", shortLinkCode)
+                .eq("account_no", accountNo)
+                .eq("del",0)
+                .eq("group_id", id));
+    }
 
     /**
      * 对象转换

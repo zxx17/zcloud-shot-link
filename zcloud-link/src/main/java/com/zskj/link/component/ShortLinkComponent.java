@@ -33,7 +33,7 @@ public class ShortLinkComponent {
         // 进制转换
         String code = encodeToBase62(murmurHash32);
         // 添加库位表位后返回
-        return ShardingDBConfig.getRandomDBPrefix() + code + ShardingTableConfig.getRandomTableSuffix();
+        return ShardingDBConfig.getRandomDBPrefix(code) + code + ShardingTableConfig.getRandomTableSuffix(code);
     }
 
     /**

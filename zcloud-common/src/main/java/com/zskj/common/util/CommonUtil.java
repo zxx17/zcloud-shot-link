@@ -29,6 +29,7 @@ public class CommonUtil {
     private static final String LOCAL_HOST_ADDRESS = "127.0.0.1";
 
     private static final String SUB_BY = ",";
+
     /**
      * 获取ip
      *
@@ -195,11 +196,57 @@ public class CommonUtil {
 
     /**
      * murmurHash32 算法生成
+     *
      * @param param string
      * @return long
      */
-    public static long murmurHash32(String param){
+    public static long murmurHash32(String param) {
         return Hashing.murmur3_32_fixed().hashUnencodedChars(param).padToLong();
+    }
+
+
+    /**
+     * URL增加前缀
+     *
+     * @param url
+     * @return
+     */
+    public static String addUrlPrefix(String url) {
+        return IDUtil.geneSnowFlakeId() + "&" + url;
+
+    }
+
+    /**
+     * 移除URL前缀
+     *
+     * @param url
+     * @return
+     */
+    public static String removeUrlPrefix(String url) {
+        String originalUrl = url.substring(url.indexOf("&") + 1);
+        return originalUrl;
+    }
+
+
+    /**
+     * 如果短链码重复，则调用这个方法
+     * url前缀的编号递增1
+     * 如果还是用雪花算法，则容易C端和B端不一致，所以采用编号递增1的方式
+     * <p>
+     * 123132432212&https://xdclass.net/download.html
+     *
+     * @param url
+     * @return
+     */
+    public static String addUrlPrefixVersion(String url) {
+        //随机id
+        String version = url.substring(0, url.indexOf("&"));
+        //原始地址
+        String originalUrl = url.substring(url.indexOf("&") + 1);
+        //新id
+        Long newVersion = Long.parseLong(version) + 1;
+        String newUrl = newVersion + "&" + originalUrl;
+        return newUrl;
     }
 
 }

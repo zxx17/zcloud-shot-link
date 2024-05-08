@@ -64,4 +64,12 @@ public interface GroupCodeMappingManager {
      */
     int updateGroupCodeMappingState(Long accountNo, Long groupId, String shortLinkCode, ShortLinkStateEnum shortLinkStateEnum);
 
+    /**
+     * 根据短链码和分组id查找
+     * @param shortLinkCode 短链码
+     * @param id 分组id
+     * @param accountNo 账号id
+     * @return do
+     */
+    GroupCodeMappingDO findByCodeAndGroupId(String shortLinkCode, Long id, Long accountNo);
 }
