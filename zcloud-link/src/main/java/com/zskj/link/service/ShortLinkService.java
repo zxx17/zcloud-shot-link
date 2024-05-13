@@ -3,7 +3,9 @@ package com.zskj.link.service;
 import com.zskj.common.model.EventMessage;
 import com.zskj.common.util.JsonData;
 import com.zskj.link.controller.request.ShortLinkAddRequest;
+import com.zskj.link.controller.request.ShortLinkDelRequest;
 import com.zskj.link.controller.request.ShortLinkPageRequest;
+import com.zskj.link.controller.request.ShortLinkUpdateRequest;
 import com.zskj.link.vo.ShortLinkVO;
 
 import java.util.Map;
@@ -45,4 +47,18 @@ public interface ShortLinkService {
      * @return map
      */
     Map<String, Object> pageByGroupId(ShortLinkPageRequest request);
+
+    /**
+     * 删除短链
+     * @param request req
+     * @return JsonData
+     */
+    JsonData delShortLink(ShortLinkDelRequest request);
+
+    /**
+     * 更新短链
+     * @param request req
+     * @return jsonData
+     */
+    JsonData updateShortLink(ShortLinkUpdateRequest request);
 }

@@ -12,7 +12,9 @@ import com.zskj.common.util.JsonUtil;
 import com.zskj.link.component.ShortLinkComponent;
 import com.zskj.link.config.rbtmq.RabbitMQConfig;
 import com.zskj.link.controller.request.ShortLinkAddRequest;
+import com.zskj.link.controller.request.ShortLinkDelRequest;
 import com.zskj.link.controller.request.ShortLinkPageRequest;
+import com.zskj.link.controller.request.ShortLinkUpdateRequest;
 import com.zskj.link.manager.DomainManager;
 import com.zskj.link.manager.GroupCodeMappingManager;
 import com.zskj.link.manager.LinkGroupManager;
@@ -219,6 +221,43 @@ public class ShortLinkServiceImpl implements ShortLinkService {
                 accountNo,
                 request.getGroupId());
         return map;
+    }
+
+
+    @Override
+    public JsonData delShortLink(ShortLinkDelRequest request) {
+        // 获取当前用户
+        Long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
+        // 构建mq消息
+        EventMessage eventMessage = EventMessage.builder().accountNo(accountNo)
+                .content(JsonUtil.obj2Json(request))
+                .messageId(IDUtil.geneSnowFlakeId().toString())
+                .eventMessageType(EventMessageType.SHORT_LINK_DEL.name())
+                .build();
+        // 发送mq消息
+        rabbitTemplate.convertAndSend(rabbitMQConfig.getShortLinkEventExchange(),
+                rabbitMQConfig.getShortLinkDelRoutingKey(),
+                eventMessage);
+
+        return JsonData.buildSuccess();
+    }
+
+    @Override
+    public JsonData updateShortLink(ShortLinkUpdateRequest request) {
+        // 获取当前用户
+        Long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
+        // 构建mq消息
+        EventMessage eventMessage = EventMessage.builder().accountNo(accountNo)
+                .content(JsonUtil.obj2Json(request))
+                .messageId(IDUtil.geneSnowFlakeId().toString())
+                .eventMessageType(EventMessageType.SHORT_LINK_UPDATE.name())
+                .build();
+        // 发送mq消息
+        rabbitTemplate.convertAndSend(rabbitMQConfig.getShortLinkEventExchange(),
+                rabbitMQConfig.getShortLinkUpdateRoutingKey(),
+                eventMessage);
+
+        return JsonData.buildSuccess();
     }
 
     /**

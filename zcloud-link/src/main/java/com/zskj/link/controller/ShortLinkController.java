@@ -3,7 +3,9 @@ package com.zskj.link.controller;
 
 import com.zskj.common.util.JsonData;
 import com.zskj.link.controller.request.ShortLinkAddRequest;
+import com.zskj.link.controller.request.ShortLinkDelRequest;
 import com.zskj.link.controller.request.ShortLinkPageRequest;
+import com.zskj.link.controller.request.ShortLinkUpdateRequest;
 import com.zskj.link.service.ShortLinkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -51,6 +53,25 @@ public class ShortLinkController {
         return JsonData.buildSuccess(result);
     }
 
+    /**
+     * 删除短链
+     * @param request req
+     * @return jsonData
+     */
+    @PostMapping("/del")
+    public JsonData delShortLink(@RequestBody ShortLinkDelRequest request){
+        return shortLinkService.delShortLink(request);
+    }
 
+
+    /**
+     * 更新短链
+     * @param request req
+     * @return jsonData
+     */
+    @PostMapping("/update")
+    public JsonData updateShortLink(@RequestBody ShortLinkUpdateRequest request){
+        return shortLinkService.updateShortLink(request);
+    }
 }
 
