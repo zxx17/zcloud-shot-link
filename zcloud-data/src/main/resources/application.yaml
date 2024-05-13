@@ -5,7 +5,7 @@ server:
 #应用名称
 spring:
   application:
-    name: zcloud-data
+    name: zcloud-data-service
 
   #服务注册发现
   cloud:
