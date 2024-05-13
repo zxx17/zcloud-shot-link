@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.util.Collections;
@@ -107,6 +108,7 @@ public class ShortLinkServiceImpl implements ShortLinkService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean handlerAddShortLink(EventMessage eventMessage) {
         try {
             if (log.isInfoEnabled()) {
@@ -203,7 +205,7 @@ public class ShortLinkServiceImpl implements ShortLinkService {
             return false;
         }catch (Exception e){
             log.error("短链码报错失败 返回错误:{}", e);
-            return false;
+            throw new RuntimeException(e);
         }
     }
 
