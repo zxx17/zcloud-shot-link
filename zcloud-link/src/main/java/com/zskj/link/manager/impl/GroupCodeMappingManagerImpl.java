@@ -46,10 +46,10 @@ public class GroupCodeMappingManagerImpl implements GroupCodeMappingManager {
     }
 
     @Override
-    public int del(String shortLinkCode, Long accountNo, Long groupId) {
+    public int del(GroupCodeMappingDO groupCodeMappingDO) {
         return groupCodeMappingMapper.update(null, new UpdateWrapper<GroupCodeMappingDO>()
-                .eq("code", shortLinkCode).eq("account_no", accountNo)
-                .eq("group_id", groupId).set("del", 1));
+                .eq("code", groupCodeMappingDO.getCode()).eq("account_no", groupCodeMappingDO.getAccountNo())
+                .eq("group_id", groupCodeMappingDO.getGroupId()).set("del", 1));
     }
 
 
@@ -88,7 +88,7 @@ public class GroupCodeMappingManagerImpl implements GroupCodeMappingManager {
         return groupCodeMappingMapper.selectOne(new QueryWrapper<GroupCodeMappingDO>()
                 .eq("code", shortLinkCode)
                 .eq("account_no", accountNo)
-                .eq("del",0)
+                .eq("del", 0)
                 .eq("group_id", id));
     }
 
@@ -103,5 +103,20 @@ public class GroupCodeMappingManagerImpl implements GroupCodeMappingManager {
         BeanUtils.copyProperties(groupCodeMappingDO, groupCodeMappingVO);
 
         return groupCodeMappingVO;
+    }
+
+    @Override
+    public int update(GroupCodeMappingDO groupCodeMappingDO) {
+
+        return groupCodeMappingMapper.update(null, new UpdateWrapper<GroupCodeMappingDO>()
+                .eq("id", groupCodeMappingDO.getId())
+                .eq("account_no", groupCodeMappingDO.getAccountNo())
+                .eq("group_id", groupCodeMappingDO.getGroupId())
+                .eq("del", 0)
+                .eq("code", groupCodeMappingDO.getCode())
+
+                .set("title", groupCodeMappingDO.getTitle())
+                .set("domain", groupCodeMappingDO.getDomain())
+        );
     }
 }

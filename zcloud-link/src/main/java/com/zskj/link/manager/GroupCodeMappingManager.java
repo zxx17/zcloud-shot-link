@@ -35,12 +35,10 @@ public interface GroupCodeMappingManager {
 
     /**
      * 根据短链码删除
-     * @param shortLinkCode 短链码
-     * @param accountNo 账号id
-     * @param groupId 分组id
+     * @param groupCodeMappingDO do
      * @return 影响行数
      */
-    int del(String shortLinkCode,Long accountNo,Long groupId);
+    int del(GroupCodeMappingDO groupCodeMappingDO);
 
 
     /**
@@ -72,4 +70,11 @@ public interface GroupCodeMappingManager {
      * @return do
      */
     GroupCodeMappingDO findByCodeAndGroupId(String shortLinkCode, Long id, Long accountNo);
+
+    /**
+     * 更新短链mapping
+     * @param groupCodeMappingDO do
+     * @return int
+     */
+    int update(GroupCodeMappingDO groupCodeMappingDO);
 }

@@ -28,7 +28,7 @@ import java.io.IOException;
 @SuppressWarnings("ALL")
 @Slf4j
 @Component
-@RabbitListener(queuesToDeclare = { @Queue("short_link.update.mapping.queue") })
+@RabbitListener(queuesToDeclare = {@Queue("short_link.update.mapping.queue")})
 public class ShortLinkUpdateMappingMQListener {
 
     @Autowired
@@ -36,15 +36,19 @@ public class ShortLinkUpdateMappingMQListener {
 
     @RabbitHandler
     public void shortLinkHandler(EventMessage eventMessage, Message message, Channel channel) throws IOException {
-        log.info("监听到消息ShortLinkUpdateMappingMQListener message消息内容:{}",message);
-        try{
-
-        }catch (Exception e){
+        log.info("监听到消息ShortLinkUpdateMappingMQListener message消息内容:{}", message);
+        try {
+            eventMessage.setEventMessageType(EventMessageType.SHORT_LINK_UPDATE_MAPPING.name());
+            boolean flag = shortLinkService.handleUpdateShortLink(eventMessage);
+            if (!flag){
+                throw new RuntimeException();
+            }
+        } catch (Exception e) {
             //处理业务异常，还有进行其他操作，比如记录失败原因
-            log.error("消费失败:{}",eventMessage);
+            log.error("消费失败:{}", eventMessage);
             throw new BizException(BizCodeEnum.MQ_CONSUME_EXCEPTION);
         }
-        log.info("消费成功:{}",eventMessage);
+        log.info("消费成功:{}", eventMessage);
         //确认消息消费成功
         //channel.basicAck(tag,false);
 

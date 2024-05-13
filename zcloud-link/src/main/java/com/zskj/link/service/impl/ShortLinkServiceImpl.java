@@ -205,12 +205,97 @@ public class ShortLinkServiceImpl implements ShortLinkService {
                 handlerAddShortLink(eventMessage);
             }
             return false;
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error("短链码报错失败 返回错误:{}", e);
             throw new RuntimeException(e);
         }
     }
 
+
+    @Override
+    public boolean handleDelShortLink(EventMessage eventMessage) {
+        try {
+            if (log.isInfoEnabled()) {
+                log.info("开始处理删除短链事件：{}", eventMessage);
+            }
+            // 获取当前账户
+            Long accountNo = eventMessage.getAccountNo();
+            // 获取当前事件类型
+            String messageType = eventMessage.getEventMessageType();
+            // 还原request实体
+            ShortLinkDelRequest delRequest = JsonUtil.json2Obj(eventMessage.getContent(), ShortLinkDelRequest.class);
+            // 类型分支
+            if (EventMessageType.SHORT_LINK_DEL_LINK.name().equalsIgnoreCase(messageType)) {
+                // link
+                ShortLinkDO shortLinkDO = ShortLinkDO.builder()
+                        .code(delRequest.getCode())
+                        .accountNo(accountNo).build();
+                int rows = shortLinkManager.logicDelShortLink(shortLinkDO);
+                log.info("删除C端短链:{}", rows);
+                return true;
+            } else if (EventMessageType.SHORT_LINK_DEL_MAPPING.name().equalsIgnoreCase(messageType)) {
+                // mapping
+                GroupCodeMappingDO groupCodeMappingDO = GroupCodeMappingDO.builder()
+                        .id(delRequest.getMappingId()).accountNo(accountNo)
+                        .groupId(delRequest.getGroupId()).code(delRequest.getCode()).build();
+
+                int rows = groupCodeMappingManager.del(groupCodeMappingDO);
+                log.info("删除B端短链:{}",rows);
+                return true;
+            }
+        } catch (Exception e) {
+            log.error("短链码删除报错失败 返回错误:{}", e);
+            throw new RuntimeException(e);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean handleUpdateShortLink(EventMessage eventMessage) {
+        try {
+            if (log.isInfoEnabled()) {
+                log.info("开始处理更新短链事件：{}", eventMessage);
+            }
+            Long accountNo = eventMessage.getAccountNo();
+            String messageType = eventMessage.getEventMessageType();
+            ShortLinkUpdateRequest updateRequest = JsonUtil.json2Obj(eventMessage.getContent(), ShortLinkUpdateRequest.class);
+
+            // 校验域名
+            DomainDO domainDO = checkDomain(updateRequest.getDomainType(), updateRequest.getDomainId(), accountNo);
+            //校验组名
+            LinkGroupDO linkGroupDO = checkLinkGroup(updateRequest.getGroupId(), accountNo);
+
+            // 分支处理
+            if (EventMessageType.SHORT_LINK_UPDATE_LINK.name().equalsIgnoreCase(messageType)) {
+                // link
+                ShortLinkDO shortLinkDO = ShortLinkDO.builder()
+                        .code(updateRequest.getCode())
+                        .title(updateRequest.getTitle())
+                        .domain(domainDO.getValue())
+                        .accountNo(accountNo).build();
+                int rows = shortLinkManager.update(shortLinkDO);
+                log.info("更新C端短链，rows={}",rows);
+                return true;
+            }else if(EventMessageType.SHORT_LINK_UPDATE_MAPPING.name().equalsIgnoreCase(messageType)){
+                // mapping
+                GroupCodeMappingDO groupCodeMappingDO = GroupCodeMappingDO.builder()
+                        .id(updateRequest.getMappingId())
+                        .groupId(updateRequest.getGroupId())
+                        .accountNo(accountNo)
+                        .title(updateRequest.getTitle())
+                        .domain(domainDO.getValue())
+                        .code(updateRequest.getCode())
+                        .build();
+                int rows = groupCodeMappingManager.update(groupCodeMappingDO);
+                log.info("更新B端短链，rows={}",rows);
+                return true;
+            }
+        } catch (Exception e) {
+            log.error("短链码更新报错失败 返回错误:{}", e);
+            throw new RuntimeException(e);
+        }
+        return false;
+    }
 
     @Override
     public Map<String, Object> pageByGroupId(ShortLinkPageRequest request) {

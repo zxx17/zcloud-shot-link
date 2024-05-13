@@ -61,4 +61,18 @@ public interface ShortLinkService {
      * @return jsonData
      */
     JsonData updateShortLink(ShortLinkUpdateRequest request);
+
+    /**
+     * 处理短链删除事件
+     * @param eventMessage event
+     * @return boolean
+     */
+    boolean handleDelShortLink(EventMessage eventMessage);
+
+    /**
+     * 处理短链更新事件
+     * @param eventMessage event
+     * @return boolean
+     */
+    boolean handleUpdateShortLink(EventMessage eventMessage);
 }

@@ -37,7 +37,11 @@ public class ShortLinkDelLinkMQListener {
     public void shortLinkHandler(EventMessage eventMessage, Message message, Channel channel) throws IOException {
         log.info("监听到消息ShortLinkDelLinkMQListener message消息内容:{}", message);
         try {
-
+            eventMessage.setEventMessageType(EventMessageType.SHORT_LINK_DEL_LINK.name());
+            boolean flag = shortLinkService.handleDelShortLink(eventMessage);
+            if (!flag){
+                throw new RuntimeException();
+            }
         } catch (Exception e) {
 
             //处理业务异常，还有进行其他操作，比如记录失败原因

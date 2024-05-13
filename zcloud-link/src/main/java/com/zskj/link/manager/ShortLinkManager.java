@@ -31,9 +31,15 @@ public interface ShortLinkManager {
 
     /**
      * 删除
-     * @param shortLinkCode code
-     * @param accountNo accountNo
+     * @param shortLinkDO do
      * @return int
      */
-    int logicDelShortLink(String shortLinkCode,Long accountNo);
+    int logicDelShortLink(ShortLinkDO shortLinkDO);
+
+    /**
+     * 更新短链
+     * @param shortLinkDO do
+     * @return int
+     */
+    int update(ShortLinkDO shortLinkDO);
 }

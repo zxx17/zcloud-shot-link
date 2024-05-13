@@ -1,6 +1,7 @@
 package com.zskj.link.manager.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.zskj.link.manager.ShortLinkManager;
 import com.zskj.link.mapper.ShortLinkMapper;
@@ -35,11 +36,22 @@ public class ShortLinkManagerImpl  implements ShortLinkManager {
     }
 
     @Override
-    public int logicDelShortLink(String shortLinkCode, Long accountNo) {
-        ShortLinkDO shortLinkDO = new ShortLinkDO();
+    public int logicDelShortLink(ShortLinkDO shortLinkDO) {
         shortLinkDO.setDel(1);
         return shortLinkMapper.update(shortLinkDO, Wrappers.lambdaQuery(ShortLinkDO.class)
-                .eq(ShortLinkDO::getCode, shortLinkCode)
-                .eq(ShortLinkDO::getAccountNo, accountNo));
+                .eq(ShortLinkDO::getCode, shortLinkDO.getCode())
+                .eq(ShortLinkDO::getAccountNo, shortLinkDO.getAccountNo()));
     }
+
+    @Override
+    public int update(ShortLinkDO shortLinkDO) {
+        return shortLinkMapper.update(null, new UpdateWrapper<ShortLinkDO>()
+                .eq("code", shortLinkDO.getCode())
+                .eq("del", 0)
+                .eq("account_no",shortLinkDO.getAccountNo())
+
+                .set("title", shortLinkDO.getTitle())
+                .set("domain", shortLinkDO.getDomain()));
+    }
+
 }
