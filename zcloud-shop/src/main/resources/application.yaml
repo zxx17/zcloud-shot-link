@@ -5,7 +5,7 @@ server:
 spring:
   application:
     name: zcloud-shop-service
-
+  #-----------------------------------------------
   #服务注册发现
   cloud:
     nacos:
@@ -13,9 +13,59 @@ spring:
         server-addr: 8.134.147.121:8848
         username: nacos
         password: WcW191002
+  #-----------------------------------------------
+  # redis连接
+  redis:
+    client-type: jedis
+    host: 8.134.147.121
+    port: 6379
+    password: WcW191002
+    jedis:
+      pool:
+        # 连接池最大连接数（使用负值表示没有限制）
+        max-active: 100
+        # 连接池中的最大空闲连接
+        max-idle: 100
+        # 连接池中的最小空闲连接
+        min-idle: 100
+        # 连接池最大阻塞等待时间（使用负值表示没有限制）
+        max-wait: 60000
 
-#配置plus打印sql日志
-mybatis-plus:
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  #-----------------------------------------------
+  #数据库配置
+  # 数据源 ds0 第一个数据库
+  # 配置ShardingSphere数据源
+  shardingsphere:
+    datasource:
+      # 数据源名称
+      names: ds0
+      # 数据源配置
+      ds0:
+        # 连接超时时间（毫秒）
+        connectionTimeoutMilliseconds: 30000
+        # 驱动类名
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        # 空闲超时时间（毫秒）
+        idleTimeoutMilliseconds: 60000
+        # JDBC连接URL
+        jdbc-url: jdbc:mysql://8.134.147.121:3306/zcloud_shop?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+        # 维护间隔时间（毫秒）
+        maintenanceIntervalMilliseconds: 30000
+        # 连接最大生命周期（毫秒）
+        maxLifetimeMilliseconds: 1800000
+        # 连接池最大大小
+        maxPoolSize: 50
+        # 连接池最小大小
+        minPoolSize: 50
+        # 数据库用户名
+        username: root
+        # 数据库密码
+        password: WcW191002
+        # 数据源类型
+        type: com.zaxxer.hikari.HikariDataSource
+    props:
+      # 打印执行的数据库以及语句
+      sql:
+        show: true
+
 
