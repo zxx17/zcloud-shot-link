@@ -32,7 +32,7 @@ public class ProductController {
      * 查看商品列表
      * @return jsonData
      */
-    @GetMapping("list")
+    @GetMapping("/list")
     public JsonData list(){
         List<ProductVO> list = productService.list();
         return JsonData.buildSuccess(list);
@@ -42,7 +42,7 @@ public class ProductController {
      * 查看商品详情
      * @param productId 商品id
      */
-    @GetMapping("detail/{product_id}")
+    @GetMapping("/detail/{product_id}")
     public JsonData detail(@PathVariable("product_id") long productId){
         ProductVO productVO = productService.findDetailById(productId);
         return JsonData.buildSuccess(productVO);
