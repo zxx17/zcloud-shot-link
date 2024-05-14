@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * </p>
  */
 
-@MapperScan("com.zskj.account.mapper")
+@MapperScan("com.zskj.shop.mapper")
 @ComponentScan("com.zskj.*")
 @EnableTransactionManagement
 @EnableFeignClients
