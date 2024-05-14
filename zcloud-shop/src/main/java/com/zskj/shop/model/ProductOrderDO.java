@@ -4,8 +4,8 @@ import java.math.BigDecimal;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.util.Date;
 import java.io.Serializable;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+
+import lombok.*;
 
 /**
  * <p>
@@ -18,6 +18,9 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @TableName("product_order")
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ProductOrderDO implements Serializable {
 
     private static final long serialVersionUID = 1L;

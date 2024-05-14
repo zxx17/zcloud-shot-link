@@ -69,7 +69,16 @@ spring:
         show: true
     # 分库分表配置具象配置
     sharding:
-      # 不分库分表的默认数据源（当前是domain表ds0库）
+      tables:
+        product_order:
+            # product_order，配置数据节点,行表达式标识符使用 ${...} 或 $->{...}，但前者与 Spring 本身的文件占位符冲突，所以在 Spring 环境中建议使用 $->{...}
+          actual-data-nodes: ds0.product_order_$->{0..1}
+            #水平分表策略+行表达式分片
+          table-strategy:
+            inline:
+              algorithm-expression: product_order_$->{ account_no % 2 }
+              sharding-column: account_no
+      # 默认数据源
       default-data-source-name: ds0
       default-key-generator:
         column: id
@@ -77,5 +86,7 @@ spring:
           worker:
             id: ${workId}
         type: SNOWFLAKE
+
+
 
 
