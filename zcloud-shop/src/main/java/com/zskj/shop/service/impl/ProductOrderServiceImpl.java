@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author Xinxuan Zhuo
@@ -48,9 +49,11 @@ public class ProductOrderServiceImpl implements ProductOrderService {
     @Override
     public Map<String, Object> page(ProductOrderPageRequest request) {
         Long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
+        int page = request.getPage() == 0 ? 1 : request.getPage();
+        int size = request.getPage() == 0 ? 10 : request.getSize();
         return productOrderManager.page(
-                request.getPage(),
-                request.getSize(),
+                page,
+                size,
                 accountNo,
                 request.getState());
     }
@@ -75,9 +78,9 @@ public class ProductOrderServiceImpl implements ProductOrderService {
         // 查找商品用于验证价格
         ProductDO productDO = productManager.findDetailById(request.getProductId());
         //验证价格
-        this.checkPrice(productDO,request);
+        this.checkPrice(productDO, request);
         //创建订单
-        ProductOrderDO productOrderDO = this.saveProductOrder(request,loginUser,orderOutTradeNo,productDO);
+        ProductOrderDO productOrderDO = this.saveProductOrder(request, loginUser, orderOutTradeNo, productDO);
         //创建支付对象
         PayInfoVO payInfoVO = PayInfoVO.builder().accountNo(loginUser.getAccountNo())
                 .outTradeNo(orderOutTradeNo).clientType(request.getClientType())
@@ -88,6 +91,7 @@ public class ProductOrderServiceImpl implements ProductOrderService {
         //调用支付信息 第三方支付 TODO
         return null;
     }
+
     private ProductOrderDO saveProductOrder(ConfirmOrderRequest orderRequest, LoginUser loginUser, String orderOutTradeNo, ProductDO productDO) {
         ProductOrderDO productOrderDO = new ProductOrderDO();
 
@@ -136,12 +140,11 @@ public class ProductOrderServiceImpl implements ProductOrderService {
         //后端计算价格
         BigDecimal bizTotal = BigDecimal.valueOf(orderRequest.getBuyNum()).multiply(productDO.getAmount());
         //前端传递总价和后端计算总价格是否一致, 如果有优惠券，也在这里进行计算
-        if( bizTotal.compareTo(orderRequest.getPayAmount()) !=0 ){
-            log.error("验证价格失败{}",orderRequest);
+        if (bizTotal.compareTo(orderRequest.getPayAmount()) != 0) {
+            log.error("验证价格失败{}", orderRequest);
             throw new BizException(BizCodeEnum.ORDER_CONFIRM_PRICE_FAIL);
         }
     }
-
 
 
 }
