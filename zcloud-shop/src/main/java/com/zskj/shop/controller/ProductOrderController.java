@@ -6,6 +6,7 @@ import com.zskj.common.enums.shop.ProductOrderPayTypeEnum;
 import com.zskj.common.interceptor.LoginInterceptor;
 import com.zskj.common.util.CommonUtil;
 import com.zskj.common.util.JsonData;
+import com.zskj.shop.annotation.RepeatSubmit;
 import com.zskj.shop.controller.request.ConfirmOrderRequest;
 import com.zskj.shop.controller.request.ProductOrderPageRequest;
 import com.zskj.shop.service.ProductOrderService;
@@ -86,6 +87,7 @@ public class ProductOrderController {
      * 下单
      */
     @PostMapping("/confirm")
+    // @RepeatSubmit(limitType = RepeatSubmit.Type.PARAM)
     public void confirm(@RequestBody @Validated ConfirmOrderRequest request,
                                                 HttpServletResponse response) {
         JsonData jsonData = productOrderService.confirmOrder(request);
