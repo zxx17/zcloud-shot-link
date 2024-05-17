@@ -14,4 +14,26 @@ spring:
         server-addr: 8.134.147.121:8848
         username: nacos
         password: WcW191002
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins:
+              - http://127.0.0.1
+            allowedMethods:
+              - GET
+              - POST
+              - DELETE
+            maxAge: 180
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        - id: zcloud-account-service
+          uri: lb://zcloud-account-service
+          predicates:
+            - Path=/account-server/**
+          filters:
+            - StripPrefix=1
 
