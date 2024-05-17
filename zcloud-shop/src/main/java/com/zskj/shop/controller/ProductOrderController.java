@@ -107,7 +107,7 @@ public class ProductOrderController {
                 } else if (client.equalsIgnoreCase(ClientTypeEnum.H5.name())) {
                     // TODO
                 }
-            } else if (payType.equalsIgnoreCase(ProductOrderPayTypeEnum.WECHAT_APY.name())) {
+            } else if (payType.equalsIgnoreCase(ProductOrderPayTypeEnum.WECHAT_PAY.name())) {
                 //微信支付
                 CommonUtil.sendJsonMessage(response, jsonData);
             }

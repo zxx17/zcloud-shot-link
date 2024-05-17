@@ -5,10 +5,19 @@ package com.zskj.common.enums.shop;
  */
 public enum ProductOrderPayTypeEnum {
 
-    WECHAT_APY,
+    /**
+     * 微信支付
+     */
+    WECHAT_PAY,
 
+    /**
+     * 支付宝支付
+     */
     ALI_PAY,
 
-    BANK;
+    /**
+     * 银行支付
+     */
+    BANK
 
 }
