@@ -8,7 +8,10 @@ package com.zskj.common.constant;
  * </p>
  */
 
-public interface CommonConstant {
-    /**平台相关**/
-    String SHOT_LINK_PROJECT_NAME = "卓晟短链";
+public final class CommonConstant {
+
+    /**
+     * 平台相关
+     **/
+    public static final String SHOT_LINK_PROJECT_NAME = "卓晟短链";
 }

@@ -8,7 +8,7 @@ package com.zskj.common.constant;
  * </p>
  */
 
-public interface TimeConstant {
+public final class TimeConstant {
     /**
      * 默认30分钟超时未支付，单位毫秒
      */
