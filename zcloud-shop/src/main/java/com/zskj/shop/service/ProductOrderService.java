@@ -1,5 +1,6 @@
 package com.zskj.shop.service;
 
+import com.zskj.common.model.EventMessage;
 import com.zskj.common.util.JsonData;
 import com.zskj.shop.controller.request.ConfirmOrderRequest;
 import com.zskj.shop.controller.request.ProductOrderPageRequest;
@@ -36,4 +37,11 @@ public interface ProductOrderService {
      * @return resp
      */
     JsonData confirmOrder(ConfirmOrderRequest request);
+
+    /**
+     * 关闭订单
+     * @param eventMessage event
+     * @return bool
+     */
+    boolean closeProductOrder(EventMessage eventMessage);
 }

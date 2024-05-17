@@ -87,6 +87,23 @@ spring:
             id: ${workId}
         type: SNOWFLAKE
 
+#-----------------rabbit-mq配置------------------------------
+  rabbitmq:
+    host: 8.134.147.121
+    port: 5672
+    username: admin
+    password: WcW191002
+    listener:
+      simple:
+        # 消息确认方式，manual(手动ack) 和auto(自动ack); 消息消费重试到达指定次数进到异常交换机和异常队列，需要改为自动ack确认消息
+        acknowledge-mode: auto
+        retry:
+          enabled: true
+          # 最大重试次数
+          max-attempts: 5
+          # 重试消息的时间间隔，5秒
+          initial-interval: 5000
+    virtual-host: dev
 
 
 
