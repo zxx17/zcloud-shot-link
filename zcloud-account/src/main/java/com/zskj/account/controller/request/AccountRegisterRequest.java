@@ -37,7 +37,6 @@ public class AccountRegisterRequest {
     /**
      * 邮箱
      */
-    @NotNull(message = "邮箱不能为空")
     private String mail;
 
     /**
