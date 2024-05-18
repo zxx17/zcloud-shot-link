@@ -21,6 +21,8 @@ import com.zskj.shop.manager.ProductOrderManager;
 import com.zskj.shop.model.ProductDO;
 import com.zskj.shop.model.ProductOrderDO;
 import com.zskj.shop.service.ProductOrderService;
+import com.zskj.shop.strategy.PayStrategy;
+import com.zskj.shop.strategy.PayStrategyFactory;
 import com.zskj.shop.vo.PayInfoVO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -31,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -56,6 +59,9 @@ public class ProductOrderServiceImpl implements ProductOrderService {
 
     @Autowired
     private RabbitMQConfig rabbitMQConfig;
+
+    @Autowired
+    private PayStrategyFactory payStrategyFactory;
 
     @Override
     public Map<String, Object> page(ProductOrderPageRequest request) {
@@ -89,17 +95,17 @@ public class ProductOrderServiceImpl implements ProductOrderService {
         String orderOutTradeNo = CommonUtil.getStringNumRandom(32);
         // 查找商品用于验证价格
         ProductDO productDO = productManager.findDetailById(request.getProductId());
-        //验证价格
+        // 验证价格
         this.checkPrice(productDO, request);
-        //创建订单
-        ProductOrderDO productOrderDO = this.saveProductOrder(request, loginUser, orderOutTradeNo, productDO);
-        //创建支付对象
+        // 创建保存订单
+        this.saveProductOrder(request, loginUser, orderOutTradeNo, productDO);
+        // 创建支付对象
         PayInfoVO payInfoVO = PayInfoVO.builder().accountNo(loginUser.getAccountNo())
                 .outTradeNo(orderOutTradeNo).clientType(request.getClientType())
                 .payType(request.getPayType()).title(productDO.getTitle()).description("")
                 .payFee(request.getPayAmount()).orderPayTimeoutMills(TimeConstant.ORDER_PAY_TIMEOUT_MILLS)
                 .build();
-        //发送延迟消息 用于超时自动关单 TODO
+        // 发送延迟消息 用于超时自动关单
         EventMessage eventMessage = EventMessage.builder()
                 .eventMessageType(EventMessageType.PRODUCT_ORDER_NEW.name())
                 .messageId(CommonUtil.getStringNumRandom(32))
@@ -111,9 +117,16 @@ public class ProductOrderServiceImpl implements ProductOrderService {
                 rabbitMQConfig.getOrderCloseDelayRoutingKey(),
                 eventMessage
         );
-
-        //调用支付信息 第三方支付 TODO
-        return JsonData.buildSuccess();
+        //调用支付信息 第三方支付
+        PayStrategy payStorage = payStrategyFactory.getPayStorage(ProductOrderPayTypeEnum.valueOf(request.getPayType()));
+        String codeUrl = payStorage.unifiedOrder(payInfoVO);
+        if (StringUtils.isNotBlank(codeUrl)) {
+            Map<String, String> resultMap = new HashMap<>(2);
+            resultMap.put("code_url", codeUrl);
+            resultMap.put("out_trade_no", payInfoVO.getOutTradeNo());
+            return JsonData.buildSuccess(resultMap);
+        }
+        return JsonData.buildResult(BizCodeEnum.PAY_ORDER_FAIL);
     }
 
 

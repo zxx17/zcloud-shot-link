@@ -107,5 +107,11 @@ spring:
           initial-interval: 5000
     virtual-host: dev
 
+# 日志配置
+#logging:
+#    level:
+#      root: debug
+
+
 
 
