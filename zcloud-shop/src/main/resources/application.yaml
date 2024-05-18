@@ -5,6 +5,8 @@ server:
 spring:
   application:
     name: zcloud-shop-service
+  profiles:
+    active: key
   #-----------------------------------------------
   #服务注册发现
   cloud:

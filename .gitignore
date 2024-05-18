@@ -11,8 +11,7 @@ target/
 *.jar
 *.war
 *.nar
-一手微信study322
-全网都有超低价格
+
 *.ear
 *.zip
 *.tar.gz
@@ -24,5 +23,6 @@ http://www.java.com/en/download/help/error_hotspot.x
 ml
 hs_err_pid*
 
-# temp
-test/
+# ===
+*key.yaml
+cert/

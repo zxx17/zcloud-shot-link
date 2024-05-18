@@ -15,25 +15,30 @@ spring:
         username: nacos
         password: WcW191002
     gateway:
-      globalcors:
-        cors-configurations:
-          '[/**]':
-            allowedOrigins:
-              - http://127.0.0.1
-            allowedMethods:
-              - GET
-              - POST
-              - DELETE
-            maxAge: 180
-      discovery:
-        locator:
-          enabled: true
-          lower-case-service-id: true
       routes:
         - id: zcloud-account-service
           uri: lb://zcloud-account-service
           predicates:
             - Path=/account-server/**
-          filters:
-            - StripPrefix=1
+        - id: zcloud-link-service
+          uri: lb://zcloud-link-service
+          predicates:
+            - Path=/link-server/**
+      default-filters:
+        - StripPrefix=1
+      globalcors: # 全局的跨域处理
+        add-to-simple-url-handler-mapping: true # 解决options请求被拦截问题
+        corsConfigurations:
+          '[/**]':
+            allowedOriginPatterns: # 允许哪些网站的跨域请求
+              - "*"
+            allowedMethods: # 允许的跨域ajax的请求方式
+              - "GET"
+              - "POST"
+              - "DELETE"
+              - "PUT"
+              - "OPTIONS"
+            allowedHeaders: "*" # 允许在请求中携带的头信息
+            allowCredentials: true # 是否允许携带cookie
+            maxAge: 360000 # 这次跨域检测的有效期
 
