@@ -1,43 +1,40 @@
-package com.zskj.account.model;
-
-import com.baomidou.mybatisplus.annotation.TableName;
-import java.util.Date;
-import java.io.Serializable;
+package com.zskj.account.vo;
 
 import lombok.*;
 
+import java.io.Serializable;
+import java.util.Date;
+
 /**
- * <p>
- * 
- * </p>
- *
  * @author Xinxuan Zhuo
- * @since 2024-04-22
+ * @version 2024/5/22
+ * <p>
+ *
+ * </p>
  */
+
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@TableName("traffic")
-public class TrafficDO implements Serializable {
+public class TrafficVO implements Serializable {
 
-    private static final long serialVersionUID = 1L;
 
     private Long id;
 
     /**
-     * 每天限制多少	条，短链
+     * 每天限制多少条，短链
      */
     private Integer dayLimit;
 
     /**
-     * 当天⽤了多少条，	短链
+     * 当天用了多少条，短链
      */
     private Integer dayUsed;
 
     /**
-     * 总次数，活码	才⽤
+     * 总次数，活码才用
      */
     private Integer totalLimit;
 
@@ -52,12 +49,12 @@ public class TrafficDO implements Serializable {
     private String outTradeNo;
 
     /**
-     * 产品层级：FIRST⻘铜、	SECOND⻩⾦、THIRD钻⽯
+     * 产品层级：FIRST青铜、SECOND黄金、THIRD钻石
      */
     private String level;
 
     /**
-     * 过期⽇期
+     * 过期日期
      */
     private Date expiredDate;
 
@@ -71,9 +68,6 @@ public class TrafficDO implements Serializable {
      */
     private Long productId;
 
-    private Date gmtCreate;
-
-    private Date gmtModified;
-
 
 }
+

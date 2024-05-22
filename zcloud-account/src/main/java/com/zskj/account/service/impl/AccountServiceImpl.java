@@ -1,14 +1,17 @@
 package com.zskj.account.service.impl;
 
+import com.zskj.account.config.rbtmq.RabbitMQConfig;
 import com.zskj.account.controller.request.AccountLoginRequest;
 import com.zskj.account.controller.request.AccountRegisterRequest;
 import com.zskj.account.manager.AccountManager;
 import com.zskj.account.model.AccountDO;
 import com.zskj.account.service.AccountService;
 import com.zskj.account.service.NotifyService;
+import com.zskj.common.enums.EventMessageType;
 import com.zskj.common.enums.account.AuthTypeEnum;
 import com.zskj.common.enums.BizCodeEnum;
 import com.zskj.common.enums.account.SendCodeEnum;
+import com.zskj.common.model.EventMessage;
 import com.zskj.common.model.LoginUser;
 import com.zskj.common.util.CommonUtil;
 import com.zskj.common.util.IDUtil;
@@ -16,6 +19,7 @@ import com.zskj.common.util.JWTUtil;
 import com.zskj.common.util.JsonData;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.Md5Crypt;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,6 +43,17 @@ public class AccountServiceImpl implements AccountService {
 
     @Autowired
     private NotifyService notifyService;
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
+    @Autowired
+    private RabbitMQConfig rabbitMQConfig;
+
+    /**
+     * 免费流量包商品id
+     */
+    private static final Long FREE_TRAFFIC_PRODUCT_ID = 1L;
 
     /**
      * 用户注册
@@ -65,7 +80,7 @@ public class AccountServiceImpl implements AccountService {
         accountDO.setPwd(cryptPwd);
         int rows = accountManager.insert(accountDO);
         log.info("rows:{},注册成功:{}", rows, accountDO.getAccountNo());
-        //用户注册成功，发放福利 TODO
+        //用户注册成功，发放福利
         userRegisterInitTask(accountDO);
         return JsonData.buildSuccess();
     }
@@ -99,10 +114,20 @@ public class AccountServiceImpl implements AccountService {
 
 
     /**
-     * 用户注册成功，发放福利 TODO
+     * 用户注册成功，发放福利
      *
      * @param accountDO 用户信息
      */
     private void userRegisterInitTask(AccountDO accountDO) {
+        EventMessage eventMessage = EventMessage.builder()
+                .messageId(IDUtil.geneSnowFlakeId().toString())
+                .accountNo(accountDO.getAccountNo())
+                .eventMessageType(EventMessageType.TRAFFIC_FREE_INIT.name())
+                .bizId(FREE_TRAFFIC_PRODUCT_ID.toString())
+                .build();
+
+        //发送发放流量包消息
+        rabbitTemplate.convertAndSend(rabbitMQConfig.getTrafficEventExchange(),
+                rabbitMQConfig.getTrafficFreeInitRoutingKey(),eventMessage);
     }
 }

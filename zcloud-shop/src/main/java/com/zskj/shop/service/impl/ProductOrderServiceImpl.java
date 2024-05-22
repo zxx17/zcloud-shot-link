@@ -2,7 +2,7 @@ package com.zskj.shop.service.impl;
 
 import com.zskj.common.constant.TimeConstant;
 import com.zskj.common.enums.BizCodeEnum;
-import com.zskj.common.enums.link.EventMessageType;
+import com.zskj.common.enums.EventMessageType;
 import com.zskj.common.enums.shop.BillTypeEnum;
 import com.zskj.common.enums.shop.ProductOrderPayTypeEnum;
 import com.zskj.common.enums.shop.ProductOrderStateEnum;
@@ -28,13 +28,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Xinxuan Zhuo
@@ -62,6 +65,9 @@ public class ProductOrderServiceImpl implements ProductOrderService {
 
     @Autowired
     private PayStrategyFactory payStrategyFactory;
+
+    @Autowired
+    private RedisTemplate<Object, Object> redisTemplate;
 
     @Override
     public Map<String, Object> page(ProductOrderPageRequest request) {
@@ -129,9 +135,46 @@ public class ProductOrderServiceImpl implements ProductOrderService {
         return JsonData.buildResult(BizCodeEnum.PAY_ORDER_FAIL);
     }
 
-
+    /**
+     * 处理订单
+     * @param eventMessage event
+     * @return bool
+     */
     @Override
-    public boolean closeProductOrder(EventMessage eventMessage) {
+    public boolean handleProductOrderMessage(EventMessage eventMessage) {
+        // 获取消息类型（关闭订单 | 支付回调更新订单状态）
+        String messageType = eventMessage.getEventMessageType();
+        try {
+            if (messageType.equalsIgnoreCase(EventMessageType.PRODUCT_ORDER_NEW.name())){
+                //关闭订单
+                return this.closeProductOrder(eventMessage);
+            }else if(EventMessageType.PRODUCT_ORDER_PAY.name().equalsIgnoreCase(messageType)){
+                //订单已经支付，更新订单状态
+                String outTradeNo = eventMessage.getBizId();
+                Long accountNo = eventMessage.getAccountNo();
+                int rows = productOrderManager.updateOrderPayState(
+                        outTradeNo,
+                        accountNo,
+                        ProductOrderStateEnum.PAY.name(),
+                        ProductOrderStateEnum.NEW.name()
+                );
+                log.info("订单更新成功:rows={},eventMessage={}",rows,eventMessage);
+                return true;
+            }
+            // TODO 退款等其他业务
+            return false;
+        }catch (Exception e){
+            log.error("处理订单业务失败:{}",eventMessage);
+            throw new BizException(BizCodeEnum.MQ_CONSUME_EXCEPTION);
+        }
+    }
+
+    /**
+     * 关闭订单
+     * @param eventMessage 消息体
+     * @return bool
+     */
+    private boolean closeProductOrder(EventMessage eventMessage){
         // 获取订单号
         String outTradeNo = eventMessage.getBizId();
         // 获取用户账号
@@ -158,8 +201,9 @@ public class ProductOrderServiceImpl implements ProductOrderService {
             payInfoVO.setAccountNo(accountNo);
 
             //TODO 需要向第三方支付平台查询状态
-            String payResult = "";
-
+            PayStrategy payStorage = payStrategyFactory.getPayStorage(ProductOrderPayTypeEnum.valueOf(productOrderDO.getPayType()));
+            String payResult = payStorage.queryPayStatus(payInfoVO);
+            log.info("第三方支付平台查询状态:{}", payResult);
             if (StringUtils.isBlank(payResult)) {
                 //如果为空，则未支付成功，本地取消订单
                 productOrderManager.updateOrderPayState(outTradeNo,
@@ -174,12 +218,63 @@ public class ProductOrderServiceImpl implements ProductOrderService {
                         accountNo,
                         ProductOrderStateEnum.PAY.name(),
                         ProductOrderStateEnum.NEW.name());
-                //触发支付成功后的逻辑， TODO
+                //触发支付成功后的逻辑， TODO（进行权益补偿）
             }
         }
         return true;
     }
 
+
+    /**
+     * 支付回调处理
+     *
+     * @param payType   支付类型
+     * @param paramsMap 支付回调参数
+     * @return jsonData
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    public JsonData processOrderCallbackMsg(ProductOrderPayTypeEnum payType, Map<String, String> paramsMap) {
+        // 获取订单号
+        String outTradeNo = paramsMap.get("out_trade_no");
+        //获取交易状态
+        String tradeState = paramsMap.get("trade_state");
+        // 获取账号
+        Long accountNo = Long.valueOf(paramsMap.get("account_no"));
+        // 根据账号和订单号查询订单信息
+        ProductOrderDO productOrderDO = productOrderManager.findByOutTradeNoAndAccountNo(outTradeNo, accountNo);
+        // 构建map封装消息体
+        Map<String, Object> content = new HashMap<>(4);
+        content.put("outTradeNo", outTradeNo);
+        content.put("buyNum", productOrderDO.getBuyNum());
+        content.put("accountNo", accountNo);
+        content.put("product", productOrderDO.getProductSnapshot());
+        // 构建mq消息
+        EventMessage eventMessage = EventMessage.builder()
+                .bizId(outTradeNo)
+                .accountNo(accountNo)
+                .messageId(outTradeNo)
+                .content(JsonUtil.obj2Json(content))
+                .eventMessageType(EventMessageType.PRODUCT_ORDER_PAY.name())
+                .build();
+        // 支付类型分支，发送消息
+        if (payType.name().equalsIgnoreCase(ProductOrderPayTypeEnum.WECHAT_PAY.name())) {
+            // 微信支付
+            if("SUCCESS".equals(tradeState)){
+                // 防止微信重复回调导致的消息重复发送
+                Boolean flag = redisTemplate.opsForValue().setIfAbsent(outTradeNo, Thread.currentThread().getName().toString(), 10, TimeUnit.MINUTES);
+                if (Boolean.TRUE.equals(flag)) {
+                    // 更新订单状态队列、发放流量包队列
+                    rabbitTemplate.convertAndSend(rabbitMQConfig.getOrderEventExchange(),
+                            rabbitMQConfig.getOrderUpdateTrafficRoutingKey(), eventMessage);
+                    return JsonData.buildSuccess();
+                }
+            }
+        }else {
+            // TODO 后续做支付类型扩展
+        }
+        return JsonData.buildResult(BizCodeEnum.PAY_ORDER_CALLBACK_NOT_SUCCESS);
+    }
 
     /**
      * 创建订单

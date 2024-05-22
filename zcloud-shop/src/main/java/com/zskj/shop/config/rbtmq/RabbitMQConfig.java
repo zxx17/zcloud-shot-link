@@ -121,7 +121,7 @@ public class RabbitMQConfig {
 
 
     /**
-     * 死信队列和交换机简历绑定关系
+     * 死信队列和交换机建立绑定关系
      *
      * @return close binding
      */
@@ -130,5 +130,87 @@ public class RabbitMQConfig {
         return new Binding(orderCloseQueue,
                 Binding.DestinationType.QUEUE, orderEventExchange, orderCloseRoutingKey, null);
     }
+
+
+    //=============订单支付成功配置===================
+
+    /**
+     * 更新订单 队列
+     */
+    private String orderUpdateQueue = "order.update.queue";
+
+    /**
+     * 订单发放流量包 队列
+     */
+    private String orderTrafficQueue = "order.traffic.queue";
+
+
+    /**
+     * 微信回调发送通知的routing key 【发送消息用】
+     */
+    private String orderUpdateTrafficRoutingKey = "order.update.traffic.routing.key";
+
+
+    /**
+     * topic类型的 用于绑定订单队列和交换机的
+     */
+    private String orderUpdateBindingKey = "order.update.*.routing.key";
+
+
+    /**
+     * topic类型的 用于绑定流量包发放队列和交换机
+     */
+    private String orderTrafficBindingKey = "order.*.traffic.routing.key";
+
+
+    /**
+     * 订单更新队列 和 交换机建立绑定关系
+     *
+     * @return Binding
+     */
+    @Bean
+    public Binding orderUpdateBinding() {
+        return new Binding(orderUpdateQueue,
+                Binding.DestinationType.QUEUE,
+                orderEventExchange,
+                orderUpdateBindingKey,
+                null);
+    }
+
+    /**
+     * 流量包发放队列 和 交换机建立绑定关系
+     *
+     * @return Binding
+     */
+    @Bean
+    public Binding orderTrafficBinding() {
+        return new Binding(orderTrafficQueue,
+                Binding.DestinationType.QUEUE,
+                orderEventExchange,
+                orderTrafficBindingKey,
+                null);
+    }
+
+    /**
+     * 更新订单队列， 普通队列，用于被监听消费
+     *
+     * @return 更新订单队列
+     */
+    @Bean
+    public Queue orderUpdateQueue() {
+        return new Queue(orderUpdateQueue, true, false, false);
+    }
+
+
+    /**
+     * 发放流量包队列，普通队列，用于被监听消费
+     *
+     * @return 发放流量包队列
+     */
+    @Bean
+    public Queue orderTrafficQueue() {
+        return new Queue(orderTrafficQueue, true, false, false);
+    }
+
 
 }

@@ -1,4 +1,4 @@
-package com.zskj.common.enums.link;
+package com.zskj.common.enums;
 
 /**
  * @author Xinxuan Zhuo
@@ -60,5 +60,16 @@ public enum  EventMessageType {
      * 新建商品订单
      */
     PRODUCT_ORDER_NEW,
+
+    /**
+     * 订单支付
+     */
+    PRODUCT_ORDER_PAY,
+
+
+    /**
+     * 免费流量包发放消息
+     */
+    TRAFFIC_FREE_INIT
 }
 

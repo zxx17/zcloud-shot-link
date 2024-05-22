@@ -1,7 +1,7 @@
 package com.zskj.link.service.impl;
 
 import com.zskj.common.enums.link.DomainTypeEnum;
-import com.zskj.common.enums.link.EventMessageType;
+import com.zskj.common.enums.EventMessageType;
 import com.zskj.common.enums.link.ShortLinkStateEnum;
 import com.zskj.common.interceptor.LoginInterceptor;
 import com.zskj.common.model.EventMessage;

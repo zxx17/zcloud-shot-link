@@ -1,5 +1,6 @@
 package com.zskj.shop.service;
 
+import com.zskj.common.enums.shop.ProductOrderPayTypeEnum;
 import com.zskj.common.model.EventMessage;
 import com.zskj.common.util.JsonData;
 import com.zskj.shop.controller.request.ConfirmOrderRequest;
@@ -39,9 +40,16 @@ public interface ProductOrderService {
     JsonData confirmOrder(ConfirmOrderRequest request);
 
     /**
-     * 关闭订单
+     * 处理订单
      * @param eventMessage event
      * @return bool
      */
-    boolean closeProductOrder(EventMessage eventMessage);
+    boolean handleProductOrderMessage(EventMessage eventMessage);
+
+    /**
+     * 处理微信回调通知
+     * @param payType 支付类型
+     * @param paramsMap 支付回调参数
+     */
+    JsonData processOrderCallbackMsg(ProductOrderPayTypeEnum payType, Map<String, String> paramsMap);
 }

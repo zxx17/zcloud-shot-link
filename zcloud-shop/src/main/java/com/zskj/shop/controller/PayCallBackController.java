@@ -3,6 +3,7 @@ package com.zskj.shop.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.wechat.pay.contrib.apache.httpclient.auth.ScheduledUpdateCertificatesVerifier;
 import com.wechat.pay.contrib.apache.httpclient.util.AesUtil;
+import com.zskj.common.enums.shop.ProductOrderPayTypeEnum;
 import com.zskj.shop.config.wxpay.WechatPayProperties;
 import com.zskj.shop.service.ProductOrderService;
 import lombok.extern.slf4j.Slf4j;
@@ -83,7 +84,8 @@ public class PayCallBackController {
                 log.info("微信支付回调解密后的明文:{}", plainBody);
 
                 Map<String, String> paramsMap = this.convertWechatPayMsgToMap(plainBody);
-                //处理业务逻辑 TODO
+                //处理业务逻辑（更新订单状态，发放流量包）
+                productOrderService.processOrderCallbackMsg(ProductOrderPayTypeEnum.WECHAT_PAY, paramsMap);
 
                 //响应微信
                 respMap.put("code", "SUCCESS");

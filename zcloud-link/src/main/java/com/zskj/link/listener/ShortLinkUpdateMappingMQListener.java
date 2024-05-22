@@ -2,7 +2,7 @@ package com.zskj.link.listener;
 
 import com.rabbitmq.client.Channel;
 import com.zskj.common.enums.BizCodeEnum;
-import com.zskj.common.enums.link.EventMessageType;
+import com.zskj.common.enums.EventMessageType;
 import com.zskj.common.exception.BizException;
 import com.zskj.common.model.EventMessage;
 import com.zskj.link.service.ShortLinkService;
