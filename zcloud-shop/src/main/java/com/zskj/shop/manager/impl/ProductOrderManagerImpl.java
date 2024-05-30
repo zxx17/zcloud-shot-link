@@ -44,7 +44,11 @@ public class ProductOrderManagerImpl implements ProductOrderManager {
                 .eq(ProductOrderDO::getOutTradeNo, outTradeNo)
                 .eq(ProductOrderDO::getAccountNo, accountNo)
                 .eq(ProductOrderDO::getDel, 0)
-                .select(ProductOrderDO::getId, ProductOrderDO::getState));
+                .select(ProductOrderDO::getId,
+                        ProductOrderDO::getState,
+                        ProductOrderDO::getBuyNum,
+                        ProductOrderDO::getOutTradeNo,
+                        ProductOrderDO::getProductSnapshot));
         return productOrderDO;
     }
 

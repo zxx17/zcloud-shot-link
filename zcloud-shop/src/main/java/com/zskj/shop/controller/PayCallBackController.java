@@ -61,6 +61,7 @@ public class PayCallBackController {
     @RequestMapping("/wechat")
     @ResponseBody
     public Map<String, String> wechatPayCallback(HttpServletRequest request, HttpServletResponse response) {
+        log.info("<<<<<<<<<<  接收到微信支付回调通知  <<<<<<<<<<");
         //获取报文
         String body = this.getRequestBody(request);
         // 随机串

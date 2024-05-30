@@ -56,6 +56,7 @@ public class RabbitMQConfig {
 
     /**
      * 过期时间，毫秒单位，10分钟
+     * TODO 这里的时间应该大于支付平台的支付超时时间，不然会出现显示取消订单但是用户还是可支付的情况（暂时用10分钟进行测试）
      */
     private Integer ttl = 1000 * 60 * 10;
 

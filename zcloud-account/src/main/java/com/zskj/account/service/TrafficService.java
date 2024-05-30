@@ -1,8 +1,10 @@
 package com.zskj.account.service;
 
 import com.zskj.account.controller.request.TrafficPageRequest;
+import com.zskj.account.controller.request.UseTrafficRequest;
 import com.zskj.account.vo.TrafficVO;
 import com.zskj.common.model.EventMessage;
+import com.zskj.common.util.JsonData;
 
 import java.util.Map;
 
@@ -44,4 +46,11 @@ public interface TrafficService {
      * @return bool
      */
     boolean deleteExpireTraffic();
+
+    /**
+     * 使用流量包
+     * @param useTrafficRequest 请求
+     * @return jsonData
+     */
+    JsonData reduce(UseTrafficRequest useTrafficRequest);
 }
