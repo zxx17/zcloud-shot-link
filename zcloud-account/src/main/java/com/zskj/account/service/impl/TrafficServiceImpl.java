@@ -146,6 +146,11 @@ public class TrafficServiceImpl implements TrafficService {
         return this.beanProcess(trafficDO);
     }
 
+    @Override
+    public boolean deleteExpireTraffic() {
+        return trafficManager.deleteExpireTraffic();
+    }
+
     private TrafficVO beanProcess(TrafficDO trafficDO) {
         TrafficVO trafficVO = new TrafficVO();
         BeanUtils.copyProperties(trafficDO, trafficVO);

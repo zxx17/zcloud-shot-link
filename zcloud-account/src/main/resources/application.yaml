@@ -89,6 +89,24 @@ spring:
               #id生成策略
               type: SNOWFLAKE
 
+  #-----------------rabbit-mq配置------------------------------
+  rabbitmq:
+    host: 8.134.147.121
+    port: 5672
+    username: admin
+    password: WcW191002
+    listener:
+      simple:
+        # 消息确认方式，manual(手动ack) 和auto(自动ack); 消息消费重试到达指定次数进到异常交换机和异常队列，需要改为自动ack确认消息
+        acknowledge-mode: auto
+        retry:
+          enabled: true
+          # 最大重试次数
+          max-attempts: 5
+          # 重试消息的时间间隔，5秒
+          initial-interval: 5000
+    virtual-host: dev
+
 #----------sms短信配置 TODO: 所有涉及阿里云的accesskey后续都做ram分配--------------
 sms:
   ali-cloud:
@@ -116,20 +134,22 @@ file-upload:
     user:
     password:
 
-  #-----------------rabbit-mq配置------------------------------
-  rabbitmq:
-    host: 8.134.147.121
-    port: 5672
-    username: admin
-    password: WcW191002
-    listener:
-      simple:
-        # 消息确认方式，manual(手动ack) 和auto(自动ack); 消息消费重试到达指定次数进到异常交换机和异常队列，需要改为自动ack确认消息
-        acknowledge-mode: auto
-        retry:
-          enabled: true
-          # 最大重试次数
-          max-attempts: 5
-          # 重试消息的时间间隔，5秒
-          initial-interval: 5000
-    virtual-host: dev
+
+
+
+  #-----------------xxl-job配置------------------------------
+logging:
+  config: classpath:logback.xml
+xxl:
+  job:
+    enable: true
+    accessToken: zsdlfupt
+    admin:
+      addresses: http://127.0.0.1:8080/xxl-job-admin
+    executor:
+      address: ''
+      appname: traffic-app-executor
+      ip: ''
+      logpath: ./data/logs/xxl-job/executor
+      logretentiondays: 30
+      port: 9999
