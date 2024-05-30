@@ -1,6 +1,11 @@
 server:
   port: 8888
 
+logging:
+  level:
+    org.springframework.cloud.gateway: trace
+    org.springframework.cloud.loadbalancer: trace
+    org.springframework.web.reactive: trace
 
 #应用名称
 spring:
@@ -24,6 +29,10 @@ spring:
           uri: lb://zcloud-link-service
           predicates:
             - Path=/link-server/**
+        - id: zcloud-shop-service
+          uri: lb://zcloud-shop-service
+          predicates:
+            - Path=/shop-server/**
       default-filters:
         - StripPrefix=1
       globalcors: # 全局的跨域处理
