@@ -6,7 +6,7 @@ spring:
   application:
     name: zcloud-shop-service
   profiles:
-    active: key
+    include: key
   #-----------------------------------------------
   #服务注册发现
   cloud:
@@ -62,7 +62,7 @@ spring:
         # 数据库用户名
         username: ${MYSQL_USERNAME}
         # 数据库密码
-        password: {MYSQL_PASSWORD}
+        password: ${MYSQL_PASSWORD}
         # 数据源类型
         type: com.zaxxer.hikari.HikariDataSource
     props:

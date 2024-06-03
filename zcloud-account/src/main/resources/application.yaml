@@ -5,6 +5,8 @@ server:
 
 #应用名称
 spring:
+  profiles:
+    include: key
   application:
     name: zcloud-account-service
 
@@ -63,7 +65,7 @@ spring:
         # 数据库用户名
         username: ${MYSQL_USERNAME}
         # 数据库密码
-        password: {MYSQL_PASSWORD}
+        password: ${MYSQL_PASSWORD}
         # 数据源类型
         type: com.zaxxer.hikari.HikariDataSource
     props:
@@ -110,12 +112,12 @@ spring:
 #----------sms短信配置 TODO: 所有涉及阿里云的accesskey后续都做ram分配--------------
 sms:
   ali-cloud:
-    enable: true
+    enable: false
     endpoint: ${ALSMS_ENDPOINT}
     access-key: ${AL_ACCESSKEY}
     access-secret: ${AL_ACCESSSECRET}
   ali-market:
-    enable: false
+    enable: true
     url: ${MARKET_URL}
     template-id: ${MARKET_TEMPLATEID}
     app-code: ${MARKET_APPCODE}
