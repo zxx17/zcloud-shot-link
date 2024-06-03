@@ -1,0 +1,10 @@
+# 微信相关配置
+wechat:
+  pay:
+    appid:
+    apiv3-key:
+    mch-id:
+    mch-serial-no:
+    private-key-path: classpath:/cert/apiclient_key.pem
+    success-redirect-url:
+    callback-url:

@@ -12,16 +12,16 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: 8.134.147.121:8848
-        username: nacos
-        password: WcW191002
+        server-addr: ${NACOS_SERVER_ADDR:127.0.0.1:8848}
+        username: ${NACOS_USERNAME:nacos}
+        password: ${NACOS_PASSWORD:nacos}
   #-----------------------------------------------
   # redis连接
   redis:
     client-type: jedis
-    host: 8.134.147.121
-    port: 6379
-    password: WcW191002
+    host: ${REDIS_HOST:127.0.0.1}
+    port: ${REDIS_PORT:6379}
+    password: ${REDIS_PASSWORD:123456}
     jedis:
       pool:
         # 连接池最大连接数（使用负值表示没有限制）
@@ -50,7 +50,7 @@ spring:
         # 空闲超时时间（毫秒）
         idleTimeoutMilliseconds: 60000
         # JDBC连接URL
-        jdbc-url: jdbc:mysql://8.134.147.121:3306/zcloud_shop?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+        jdbc-url: ${MYSQL_URL}
         # 维护间隔时间（毫秒）
         maintenanceIntervalMilliseconds: 30000
         # 连接最大生命周期（毫秒）
@@ -60,9 +60,9 @@ spring:
         # 连接池最小大小
         minPoolSize: 50
         # 数据库用户名
-        username: root
+        username: ${MYSQL_USERNAME}
         # 数据库密码
-        password: WcW191002
+        password: {MYSQL_PASSWORD}
         # 数据源类型
         type: com.zaxxer.hikari.HikariDataSource
     props:
@@ -91,10 +91,10 @@ spring:
 
 #-----------------rabbit-mq配置------------------------------
   rabbitmq:
-    host: 8.134.147.121
-    port: 5672
-    username: admin
-    password: WcW191002
+    host: ${RABBITMQ_HOST:127.0.0.1}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
     listener:
       simple:
         # 消息确认方式，manual(手动ack) 和auto(自动ack); 消息消费重试到达指定次数进到异常交换机和异常队列，需要改为自动ack确认消息

@@ -25,4 +25,5 @@ hs_err_pid*
 
 # ===
 *key.yaml
+*key.properties
 cert/
