@@ -200,7 +200,6 @@ public class ProductOrderServiceImpl implements ProductOrderService {
             payInfoVO.setOutTradeNo(outTradeNo);
             payInfoVO.setAccountNo(accountNo);
 
-            //TODO 需要向第三方支付平台查询状态
             PayStrategy payStorage = payStrategyFactory.getPayStorage(ProductOrderPayTypeEnum.valueOf(productOrderDO.getPayType()));
             String payResult = payStorage.queryPayStatus(payInfoVO);
             log.info("第三方支付平台查询状态:{}", payResult);
