@@ -46,6 +46,6 @@ TODO
 
 # 联系作者
 
-1. 欢迎提交 [issue](https://github.com/NiuXiangQian/u/issues)，请写清楚遇到问题的原因、开发环境、复显步骤。
+1. 欢迎提交 [issue](https://github.com/zxx17/zcloud-shot-link/issues)，请写清楚遇到问题的原因、开发环境、复显步骤。
 2. 有更多的功能想法欢迎提出
 3. 联系作者微信：final__ww
