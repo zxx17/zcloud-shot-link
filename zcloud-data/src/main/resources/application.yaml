@@ -11,9 +11,9 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: 8.134.147.121:8848
-        username: nacos
-        password: WcW191002
+        server-addr: ${NACOS_SERVER_ADDR:127.0.0.1:8848}
+        username: ${NACOS_USERNAME:nacos}
+        password: ${NACOS_PASSWORD:nacos}
 
 #配置plus打印sql日志
 mybatis-plus:
