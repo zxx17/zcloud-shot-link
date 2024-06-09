@@ -1,5 +1,7 @@
 package com.zskj.link.service.impl;
 
+import com.zskj.common.constant.RedisKeyConstant;
+import com.zskj.common.enums.BizCodeEnum;
 import com.zskj.common.enums.link.DomainTypeEnum;
 import com.zskj.common.enums.EventMessageType;
 import com.zskj.common.enums.link.ShortLinkStateEnum;
@@ -11,10 +13,8 @@ import com.zskj.common.util.JsonData;
 import com.zskj.common.util.JsonUtil;
 import com.zskj.link.component.ShortLinkComponent;
 import com.zskj.link.config.rbtmq.RabbitMQConfig;
-import com.zskj.link.controller.request.ShortLinkAddRequest;
-import com.zskj.link.controller.request.ShortLinkDelRequest;
-import com.zskj.link.controller.request.ShortLinkPageRequest;
-import com.zskj.link.controller.request.ShortLinkUpdateRequest;
+import com.zskj.link.controller.request.*;
+import com.zskj.link.fegin.TrafficFeignService;
 import com.zskj.link.manager.DomainManager;
 import com.zskj.link.manager.GroupCodeMappingManager;
 import com.zskj.link.manager.LinkGroupManager;
@@ -35,6 +35,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -76,6 +77,10 @@ public class ShortLinkServiceImpl implements ShortLinkService {
     @Autowired
     private GroupCodeMappingManager groupCodeMappingManager;
 
+    @Autowired
+    private TrafficFeignService trafficFeignService;
+
+
     @Override
     public ShortLinkVO parseShortLinkCode(String shortLinkCode) {
         ShortLinkDO shortLinkDO = shortLinkManager.findByShortLinkCode(shortLinkCode);
@@ -91,6 +96,18 @@ public class ShortLinkServiceImpl implements ShortLinkService {
     public JsonData createShortLink(ShortLinkAddRequest request) {
         Long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
 
+        //需要预先检查下是否有足够多的可以进行创建
+        String cacheKey = String.format(RedisKeyConstant.DAY_TOTAL_TRAFFIC, accountNo);
+        // 使用lua脚本 检查key是否存在，然后递减，是否大于等于0
+        // 如果key不存在，则未使用过，lua返回值是0； 新增流量包的时候，不用重新计算次数，直接删除key,消费的时候回计算更新
+        String script = "if redis.call('get',KEYS[1]) then return redis.call('decr',KEYS[1]) else return 0 end";
+        Long leftTimes = redisTemplate.execute(new DefaultRedisScript<>(script, Long.class), Arrays.asList(cacheKey), "");
+        log.info(">>>>>今日流量预扣减完剩余次数:{}", leftTimes);
+        //流量包不足
+        if (leftTimes < 0) {
+            return JsonData.buildResult(BizCodeEnum.TRAFFIC_REDUCE_FAIL);
+        }
+        // 预扣减成功（>=0  等于0的情况可能是新增流量包或则惰性更新）
         // 防止短链码重复，也解决长-短链码一对多的问题
         String newOriginalUrl = CommonUtil.addUrlPrefix(request.getOriginalUrl());
         request.setOriginalUrl(newOriginalUrl);
@@ -150,9 +167,17 @@ public class ShortLinkServiceImpl implements ShortLinkService {
             if (result > 0) {
                 // C端处理
                 if (EventMessageType.SHORT_LINK_ADD_LINK.name().equalsIgnoreCase(messageType)) {
+                    log.info(">>>>>C端处理新增短链事件：{}", eventMessage);
                     // 先判断短链码是否被使用
                     ShortLinkDO shortLinCodeDOInDB = shortLinkManager.findByShortLinkCode(shortLinkCode);
                     if (shortLinCodeDOInDB == null) {
+                        // 远程调用账号服务扣减流量包
+                        boolean reduceFlag = reduceTraffic(eventMessage, shortLinkCode);
+                        // 扣减失败
+                        if (!reduceFlag) {
+                            return false;
+                        }
+                        // 扣减成功，新增短链码
                         ShortLinkDO shortLinkDO = ShortLinkDO.builder()
                                 .accountNo(accountNo).code(shortLinkCode)
                                 .title(addRequest.getTitle()).originalUrl(addRequest.getOriginalUrl())
@@ -167,6 +192,7 @@ public class ShortLinkServiceImpl implements ShortLinkService {
                     }
                 } // B端处理
                 else if (EventMessageType.SHORT_LINK_ADD_MAPPING.name().equalsIgnoreCase(messageType)) {
+                    log.info(">>>>>B端处理新增短链事件：{}", eventMessage);
                     // 判断b端短链码是否重复
                     GroupCodeMappingDO groupCodeMappingDOInDB = groupCodeMappingManager.findByCodeAndGroupId(shortLinkCode, linkGroupDO.getId(), accountNo);
                     if (groupCodeMappingDOInDB == null) {
@@ -240,7 +266,7 @@ public class ShortLinkServiceImpl implements ShortLinkService {
                         .groupId(delRequest.getGroupId()).code(delRequest.getCode()).build();
 
                 int rows = groupCodeMappingManager.del(groupCodeMappingDO);
-                log.info("删除B端短链:{}",rows);
+                log.info("删除B端短链:{}", rows);
                 return true;
             }
         } catch (Exception e) {
@@ -274,9 +300,9 @@ public class ShortLinkServiceImpl implements ShortLinkService {
                         .domain(domainDO.getValue())
                         .accountNo(accountNo).build();
                 int rows = shortLinkManager.update(shortLinkDO);
-                log.info("更新C端短链，rows={}",rows);
+                log.info("更新C端短链，rows={}", rows);
                 return true;
-            }else if(EventMessageType.SHORT_LINK_UPDATE_MAPPING.name().equalsIgnoreCase(messageType)){
+            } else if (EventMessageType.SHORT_LINK_UPDATE_MAPPING.name().equalsIgnoreCase(messageType)) {
                 // mapping
                 GroupCodeMappingDO groupCodeMappingDO = GroupCodeMappingDO.builder()
                         .id(updateRequest.getMappingId())
@@ -287,7 +313,7 @@ public class ShortLinkServiceImpl implements ShortLinkService {
                         .code(updateRequest.getCode())
                         .build();
                 int rows = groupCodeMappingManager.update(groupCodeMappingDO);
-                log.info("更新B端短链，rows={}",rows);
+                log.info("更新B端短链，rows={}", rows);
                 return true;
             }
         } catch (Exception e) {
@@ -343,6 +369,21 @@ public class ShortLinkServiceImpl implements ShortLinkService {
                 eventMessage);
 
         return JsonData.buildSuccess();
+    }
+
+
+    /**
+     * 调用账号服务---扣减流量包
+     */
+    private boolean reduceTraffic(EventMessage eventMessage, String shortLinkCode) {
+        UseTrafficRequest request = new UseTrafficRequest();
+        request.setBizId(shortLinkCode);
+        JsonData jsonData = trafficFeignService.useTraffic(request);
+        if (jsonData.getCode() != 0) {
+            log.error("流量包不足，扣减失败:{}", eventMessage);
+            return false;
+        }
+        return true;
     }
 
     /**

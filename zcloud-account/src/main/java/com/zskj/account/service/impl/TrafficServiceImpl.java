@@ -11,6 +11,7 @@ import com.zskj.account.service.TrafficService;
 import com.zskj.account.vo.ProductVO;
 import com.zskj.account.vo.TrafficVO;
 import com.zskj.account.vo.UseTrafficVO;
+import com.zskj.common.constant.RedisKeyConstant;
 import com.zskj.common.enums.BizCodeEnum;
 import com.zskj.common.enums.EventMessageType;
 import com.zskj.common.exception.BizException;
@@ -23,6 +24,7 @@ import com.zskj.common.util.TimeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +33,7 @@ import org.springframework.util.CollectionUtils;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -49,6 +52,9 @@ public class TrafficServiceImpl implements TrafficService {
 
     @Autowired
     private ProductFeignService productFeignService;
+
+    @Autowired
+    private RedisTemplate<Object, Object> redisTemplate;
 
     @Override
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
@@ -90,6 +96,11 @@ public class TrafficServiceImpl implements TrafficService {
 
             int rows = trafficManager.add(trafficDO);
             log.info("消费消息新增流量包:rows={},trafficDO={}", rows, trafficDO);
+
+            // 新增流量包，删除用户当天剩余的可用流量包次数（重置预扣减逻辑）
+            String totalTrafficTimesKey = String.format(RedisKeyConstant.DAY_TOTAL_TRAFFIC, accountNo);
+            redisTemplate.delete(totalTrafficTimesKey);
+
             return true;
         }
         // 注册则发放免费流量包
@@ -160,8 +171,35 @@ public class TrafficServiceImpl implements TrafficService {
         Long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
         //处理流量包，筛选出未更新流量包，当前使用的流量包
         UseTrafficVO useTrafficVO = processTrafficList(accountNo);
+        log.info("今天可用总次数:{},当前使用流量包:{}", useTrafficVO.getDayTotalLeftTimes(), useTrafficVO.getCurrentTrafficDO());
 
-        return null;
+        // 当前可用流量包为null，返回流量不足扣减失败
+        if (useTrafficVO.getCurrentTrafficDO() == null) {
+            return JsonData.buildResult(BizCodeEnum.TRAFFIC_REDUCE_FAIL);
+        }
+
+        // 惰性更新流量包
+        if (!useTrafficVO.getUnUpdatedTrafficIds().isEmpty()) {
+            log.info("待更新流量包列表:{}", useTrafficVO.getUnUpdatedTrafficIds());
+            //更新今日流量包
+            trafficManager.batchUpdateUsedTimes(accountNo, useTrafficVO.getUnUpdatedTrafficIds());
+        }
+
+        //先更新，再扣减当前使用的流量包
+        int rows = trafficManager.addDayUsedTimes(accountNo, useTrafficVO.getCurrentTrafficDO().getId(), 1);
+
+        if (rows != 1) {
+            throw new BizException(BizCodeEnum.TRAFFIC_REDUCE_FAIL);
+        }
+
+        // 往redis存储总流量包次数，短链服务那边递减即可（预扣减）； 如果有新增流量包，则删除这个key
+        String key = String.format(RedisKeyConstant.DAY_TOTAL_TRAFFIC, accountNo);
+        // 今日剩余时间作为ttl，单位是s
+        long ttl = TimeUtil.getRemainSecondsOneDay(new Date());
+        redisTemplate.opsForValue().set(key,
+                useTrafficVO.getDayTotalLeftTimes() - 1, ttl, TimeUnit.SECONDS);
+
+        return JsonData.buildSuccess();
     }
 
     /**

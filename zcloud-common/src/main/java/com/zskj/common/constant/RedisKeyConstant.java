@@ -16,9 +16,14 @@ public final class RedisKeyConstant {
     public static final String CHECK_CODE_KEY = "code:%s:%s";
 
     /**
-     * 提交订单令牌的缓存key
+     * 提交订单令牌的缓存key  accountNo  token令牌
      */
     public static final String SUBMIT_ORDER_TOKEN_KEY = "order:submit:%s:%s";
+
+    /**
+     * 用户当天剩余的可用流量包次数  accountNo
+     */
+    public static final String DAY_TOTAL_TRAFFIC = "lock:traffic:day_total:%s";
 
 
 }

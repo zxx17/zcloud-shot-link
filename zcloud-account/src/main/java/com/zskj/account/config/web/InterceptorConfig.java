@@ -25,7 +25,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
                 // TODO 上传接口放行了，后续必须做限流
                 .excludePathPatterns(
                         "/api/account/*/register","/api/account/*/upload","/api/account/*/login",
-                        "/api/notify/*/captcha","/api/notify/*/send_code");
+                        "/api/notify/*/captcha","/api/notify/*/send_code", "/api/traffic/*/reduce");
     }
 }
 
