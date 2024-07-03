@@ -12,6 +12,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -72,6 +73,7 @@ public class SmsComponent {
      * @param templateCode 模板码
      * @param value        code
      */
+    @Async("threadPoolTaskExecutor")
     public void send(String to, String templateCode, String value) {
         try {
             // 阿里云sms

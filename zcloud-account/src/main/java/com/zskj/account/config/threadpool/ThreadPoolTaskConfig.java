@@ -20,7 +20,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 @Configuration
 public class ThreadPoolTaskConfig {
 
-    @Bean(name = "threadPoolTaskExecuter")
+    @Bean(name = "threadPoolTaskExecutor")
     public ThreadPoolTaskExecutor threadPoolTaskExecutor(){
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         //线程池创建的核心线程数，线程池维护线程的最少数量，即使没有任务需要执行，也会一直存活
